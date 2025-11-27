@@ -48,10 +48,10 @@
       text-align: center;
       position: relative;
       overflow: hidden;
-      min-height: 600px; /* Altezza fissa per stabilità */
+      min-height: 650px;
       display: flex;
       flex-direction: column;
-      justify-content: center; /* Centra contenuto verticalmente */
+      justify-content: center;
     }
     .app::before {
         content: '';
@@ -60,7 +60,7 @@
         background: linear-gradient(to right, var(--aloe-primary), var(--aloe-accent));
     }
 
-    /* --- HEADER & PROGRESS BAR --- */
+    /* --- HEADER (Progress Bar Only) --- */
     .header-container {
       position: absolute;
       top: 30px;
@@ -68,7 +68,6 @@
       right: 0;
       transition: opacity 0.3s;
     }
-    /* Nascondiamo l'header nella schermata di standby */
     .hidden { opacity: 0; pointer-events: none; }
 
     .progress-bar {
@@ -93,7 +92,7 @@
         background-color: var(--aloe-accent);
     }
 
-    /* --- Titles --- */
+    /* --- Typography --- */
     h1 {
       font-size: 26px;
       font-weight: 700;
@@ -110,7 +109,7 @@
       max-width: 90%;
     }
 
-    /* --- Steps Animation --- */
+    /* --- Animations --- */
     .step { display: none; width: 100%; animation: fadeIn 0.5s ease; }
     .step.active { display: block; }
     @keyframes fadeIn {
@@ -118,39 +117,41 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* --- STEP 0: QR SCAN SCREEN --- */
-    .qr-container {
-      cursor: pointer; /* Indica che è cliccabile */
+    /* --- STEP 0: QR SCAN --- */
+    .qr-wrapper {
+      margin: 0 auto 30px;
       padding: 20px;
       border: 2px dashed var(--aloe-border);
       border-radius: 20px;
       display: inline-block;
-      margin-bottom: 24px;
+      cursor: pointer;
       background: #FAFAFA;
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
-    .qr-container:active {
-      transform: scale(0.95);
+    .qr-wrapper:active {
+      transform: scale(0.96);
       border-color: var(--aloe-accent);
       background: #F4F8ED;
     }
-    .qr-icon {
-      font-size: 80px;
+    /* Generazione QR Code placeholder via CSS/Image */
+    .qr-image {
+      width: 180px;
+      height: 180px;
       display: block;
-      color: var(--aloe-text-dark);
+      /* Placeholder QR from a reliable public API */
+      background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ALOE-KIOSK-DEMO&color=3E2B1F');
+      background-size: contain;
+      opacity: 0.9;
     }
-    .scan-hint {
-      font-size: 14px;
-      color: var(--aloe-accent);
-      font-weight: 600;
-      margin-top: 20px;
-      animation: pulse 2s infinite;
+    .tap-hint {
+        font-size: 13px;
+        color: var(--aloe-accent);
+        font-weight: 600;
+        margin-top: 15px;
+        animation: pulse 2s infinite;
     }
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
+    @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
+
 
     /* --- Buttons --- */
     .buttons-stack {
@@ -161,7 +162,7 @@
     }
 
     .btn {
-      padding: 16px 24px;
+      padding: 18px 24px;
       border-radius: 50px;
       border: 2px solid var(--aloe-border);
       background: var(--aloe-bg-container);
@@ -181,9 +182,9 @@
     .btn-primary:hover { background: #7A4E25; }
     .btn-primary:disabled { background: #CDBBAE; box-shadow: none; cursor: not-allowed; }
 
-    /* --- Step 2: Big Emojis --- */
+    /* --- Step 2: Emojis --- */
     .emoji-row {
-      display: flex; justify-content: center; gap: 24px; margin: 40px 0;
+      display: flex; justify-content: center; gap: 20px; margin: 40px 0;
     }
     .btn-emoji {
       width: 85px; height: 85px; border-radius: 50%; font-size: 42px;
@@ -196,7 +197,7 @@
       transform: scale(1.15); box-shadow: 0 8px 16px rgba(107, 142, 35, 0.2);
     }
 
-    /* --- Step 3: Chips & Inputs --- */
+    /* --- Step 3: Chips --- */
     .chips-container {
         display: flex; flex-wrap: wrap; gap: 10px;
         justify-content: center; margin-bottom: 24px;
@@ -228,7 +229,7 @@
     .summary-item { margin-bottom: 8px; font-size: 15px; display: flex; }
     .summary-label { font-weight: 600; color: var(--aloe-primary); width: 90px; }
 
-    /* --- Footer Links --- */
+    /* --- Footer --- */
     .footer {
       margin-top: 24px; font-size: 15px; color: var(--aloe-text-light);
       display: flex; justify-content: center; gap: 20px;
@@ -240,7 +241,7 @@
     .link:hover { opacity: 0.8; }
 
     /* --- Success --- */
-    .big-check { font-size: 64px; color: var(--aloe-accent); margin-bottom: 16px; display: block; }
+    .big-check { font-size: 72px; color: var(--aloe-accent); margin-bottom: 20px; display: block; }
     .final-message { font-size: 14px; color: var(--aloe-text-light); margin-top: 30px; font-weight: 500; }
 
   </style>
@@ -259,25 +260,25 @@
     </div>
 
     <div class="step active" id="step0" onclick="simulateScan()">
-      <div class="qr-container">
-        <span class="qr-icon">🏁</span> 
-        </div>
-      <h1>Welcome back!</h1>
-      <p class="subtitle">Please scan your checkout QR Code to leave a quick feedback.</p>
-      <p class="scan-hint">(Tap anywhere to simulate scan)</p>
+      <div class="qr-wrapper">
+        <div class="qr-image"></div>
+      </div>
+      <h1>Welcome</h1>
+      <p class="subtitle">Please scan your QR code to begin.</p>
+      <p class="tap-hint">(Tap screen to simulate scan)</p>
     </div>
 
 
     <div class="step" id="step1">
       <h1>Share Your Feedback</h1>
-      <p class="subtitle">We found your stay! Choose how to share.</p>
+      <p class="subtitle">How would you like to submit your review?</p>
 
       <div class="buttons-stack">
         <button class="btn" onclick="selectMode('anonymous')">
           <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          <span class="btn-icon">👤</span> Continue as <span id="userNameDisplay" style="margin-left:4px">Guest</span>
+          <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Guest Name</span>
         </button>
       </div>
     </div>
@@ -308,6 +309,7 @@
         <div class="chip" onclick="applyTemplate(this, 'Great breakfast')">🍳 Great breakfast</div>
         <div class="chip" onclick="applyTemplate(this, 'I had an issue')">⚠️ I had an issue</div>
       </div>
+      
       <textarea id="commentInput" placeholder="Add message here (optional)..."></textarea>
 
       <button class="btn-primary btn" onclick="prepareSummary()" style="width:100%">Review Feedback</button>
@@ -344,19 +346,17 @@
   </div>
 
   <script>
-    // Dati simulati (che arriverebbero dal QR code)
+    // Dati simulati
     const simulatedQRData = {
-        name: "Mario Rossi",
-        stayId: "STAY_2023_MR",
-        service: "Spa Weekend"
+        name: "Guest Name", // Generico come richiesto
     };
 
     let feedbackData = { anonymous: true, rating: null, comment: "", tags: [] };
-    let currentStep = 0; // Inizia dallo Step 0 (Scan)
-    const totalSteps = 5; // Step 1 to 5 for progress bar
+    let currentStep = 0; 
+    const totalSteps = 5; 
 
     function updateProgressBar(stepNum) {
-        if (stepNum === 0) return; // Niente progress bar allo step 0
+        if (stepNum === 0) return;
         for (let i = 1; i <= totalSteps; i++) {
             const dot = document.getElementById('dot' + i);
             if (i === stepNum) {
@@ -371,8 +371,6 @@
 
     function goToStep(stepNum) {
       currentStep = stepNum;
-      
-      // Gestione visibilità Header
       const header = document.getElementById('mainHeader');
       if (stepNum > 0 && stepNum < 6) {
           header.classList.remove('hidden');
@@ -382,20 +380,17 @@
 
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
       document.getElementById('step' + stepNum).classList.add('active');
-      
       if (stepNum > 0) updateProgressBar(stepNum);
     }
 
-    // --- FUNZIONE SIMULAZIONE SCAN (Step 0 -> Step 1) ---
+    // --- SIMULAZIONE SCAN ---
     function simulateScan() {
-        // Simuliamo un piccolo ritardo di lettura
         document.body.style.cursor = 'wait';
         setTimeout(() => {
             document.body.style.cursor = 'default';
-            // Popoliamo il nome nel pulsante dello step 1
             document.getElementById('userNameDisplay').textContent = simulatedQRData.name;
             goToStep(1);
-        }, 600); // 600ms di ritardo simulato
+        }, 600);
     }
 
     // Step 1 Fn
@@ -413,11 +408,13 @@
       setTimeout(() => goToStep(3), 300);
     }
 
-    // Step 3 Fn
+    // Step 3 Fn - LOGICA CORRETTA PER I TEMPLATE
     function applyTemplate(el, text) {
       const textarea = document.getElementById("commentInput");
+      // Il testo inserito è ESATTAMENTE quello passato dalla funzione (uguale alla chip)
       textarea.value = text;
       feedbackData.comment = text;
+
       document.querySelectorAll(".chip").forEach(chip => {
         chip.classList.remove("selected");
       });
@@ -431,7 +428,7 @@
 
       document.getElementById('sumMode').textContent = feedbackData.anonymous 
         ? 'Anonymous' 
-        : `Named (${simulatedQRData.name})`; // Usa il nome simulato
+        : `Named (${simulatedQRData.name})`;
       
       const ratings = {1: '😟 Not Good', 2: '😐 Okay', 3: '🙂 Great'};
       document.getElementById('sumRating').textContent = ratings[feedbackData.rating];
@@ -439,12 +436,9 @@
       goToStep(4);
     }
 
-    // Step 5 Fn & Reset Loop
+    // Step 5 Fn & Reset
     function submitFeedback() {
-      console.log("Sending data...", { ...feedbackData, ...simulatedQRData });
       goToStep(5);
-      
-      // Conto alla rovescia e Reset
       let seconds = 5;
       const counterEl = document.getElementById('countdown');
       const interval = setInterval(() => {
@@ -452,7 +446,7 @@
           counterEl.textContent = seconds;
           if (seconds <= 0) {
               clearInterval(interval);
-              window.location.reload(); // Ricarica la pagina per resettare tutto
+              window.location.reload(); 
           }
       }, 1000);
     }
