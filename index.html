@@ -288,15 +288,15 @@
                 ✅ Access granted. You can now leave your review.
             </div>
             <div class="access-subnote">
-                (Review will appear on ALOE only if the user booked an ALOE Package. General hotel reviews are internal.)
+                (Review will appear on ALOE only if the user booked an ALOE Package)
             </div>
             
             <!-- Input per la Demo -->
             <label class="sim-label" for="simGuestName">Simulate Guest Name:</label>
-            <input type="text" class="modal-input" id="simGuestName" value="Mario Rossi">
+            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi">
             <div class="modal-hint">
-                Demo Mode: Change name (e.g. "Mario 2") to simulate a different guest.<br>
-                Re-using the same name triggers the "Already Received" block.
+                Tip: Use a new name (e.g. "Mario 2") for each new review.<br>
+                Re-using the exact same name triggers the "Already Received" block.
             </div>
             
             <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm & Continue</button>
@@ -467,7 +467,7 @@
 
         // Controllo duplicati (Case insensitive)
         if (submittedGuests.has(guestName.toLowerCase())) {
-            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} has already been submitted.`;
+            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} (Chianti Wine Tour) has already been submitted.`;
             goToStep(6); 
             setTimeout(() => { goToStep(0); }, 4000);
             return;
