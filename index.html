@@ -15,7 +15,7 @@
       --aloe-text-dark: #3E2B1F;
       --aloe-text-light: #8C7B70;
       --aloe-border: #E8E0D5;
-      --aloe-progress-inactive: #E0D6C8; /* Color for inactive dots */
+      --aloe-progress-inactive: #E0D6C8;
     }
 
     * {
@@ -58,18 +58,11 @@
 
     /* --- HEADER & PROGRESS BAR --- */
     .header-container {
-      margin-bottom: 32px;
+      /* Rimossa la scritta del brand, aumentato il margine inferiore per spaziatura */
+      margin-bottom: 40px;
     }
 
-    .brand-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--aloe-primary);
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-      display: block;
-    }
+    /* Stile rimosso per .brand-title */
 
     .progress-bar {
       display: flex;
@@ -87,9 +80,8 @@
 
     .progress-dot.active {
       background-color: var(--aloe-accent);
-      transform: scale(1.3); /* Make the active dot slightly bigger */
+      transform: scale(1.3);
     }
-    /* Optional: Make completed dots also accent color */
     .progress-dot.completed {
         background-color: var(--aloe-accent);
     }
@@ -217,7 +209,6 @@
 
   <div class="app">
     <div class="header-container">
-        <span class="brand-title">🌿 Hotel Feedback Kiosk</span>
         <div class="progress-bar">
             <div class="progress-dot active" id="dot1"></div>
             <div class="progress-dot" id="dot2"></div>
@@ -229,8 +220,8 @@
 
 
     <div class="step active" id="step1">
-      <h1>How do you want to share?</h1>
-      <p class="subtitle">Choose your privacy level below.</p>
+      <h1>Share Your Feedback</h1>
+      <p class="subtitle">Choose your privacy level below to begin.</p>
 
       <div class="buttons-stack">
         <button class="btn" onclick="selectMode('anonymous')">
@@ -263,10 +254,10 @@
       <p class="subtitle">Optional: Tap a tag or write a note.</p>
 
       <div class="chips-container">
-        <div class="chip" onclick="toggleChip(this)">👌 Perfect stay</div>
-        <div class="chip" onclick="toggleChip(this)">🏨 Staff was kind</div>
-        <div class="chip" onclick="toggleChip(this)">🍳 Great breakfast</div>
-        <div class="chip" onclick="toggleChip(this)">⚠️ I had an issue</div>
+        <div class="chip" onclick="applyTemplate(this, 'Everything was perfect 👌')">👌 Perfect stay</div>
+        <div class="chip" onclick="applyTemplate(this, 'Staff was kind, room could be improved')">🏨 Staff was kind</div>
+        <div class="chip" onclick="applyTemplate(this, 'Great breakfast choices')">🍳 Great breakfast</div>
+        <div class="chip" onclick="applyTemplate(this, 'I had an issue I want to report')">⚠️ I had an issue</div>
       </div>
       <textarea id="commentInput" placeholder="Type your message here (optional)..."></textarea>
 
@@ -304,21 +295,17 @@
   </div>
 
   <script>
-    // Dati simulati
     let feedbackData = { anonymous: true, rating: null, comment: "", tags: [] };
     let currentStep = 1;
     const totalSteps = 5;
 
-    // Function to update the progress bar dots
     function updateProgressBar(stepNum) {
         for (let i = 1; i <= totalSteps; i++) {
             const dot = document.getElementById('dot' + i);
             if (i === stepNum) {
-                dot.classList.add('active');
-                dot.classList.remove('completed');
+                dot.classList.add('active'); dot.classList.remove('completed');
             } else if (i < stepNum) {
-                dot.classList.add('completed');
-                dot.classList.remove('active');
+                dot.classList.add('completed'); dot.classList.remove('active');
             } else {
                 dot.classList.remove('active', 'completed');
             }
@@ -327,11 +314,8 @@
 
     function goToStep(stepNum) {
       currentStep = stepNum;
-      // Hide all steps
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-      // Show current step
       document.getElementById('step' + stepNum).classList.add('active');
-      // Update progress bar
       updateProgressBar(stepNum);
     }
 
@@ -347,19 +331,28 @@
       document.querySelectorAll('.btn-emoji').forEach(b => b.classList.remove('selected'));
       document.getElementById('emoji' + val).classList.add('selected');
       document.getElementById('btnNextStep2').disabled = false;
-      setTimeout(() => goToStep(3), 300); // Auto-advance
+      setTimeout(() => goToStep(3), 300);
     }
 
-    // Step 3 Fn
-    function toggleChip(chip) {
-        chip.classList.toggle('selected');
+    // Step 3 Fn - FUNZIONE CHIP TEMPLATE
+    function applyTemplate(el, text) {
+      // Trova la textarea
+      const textarea = document.getElementById("commentInput");
+      // Inserisce il testo del template nella textarea
+      textarea.value = text;
+      feedbackData.comment = text;
+
+      // Gestione visuale della selezione
+      document.querySelectorAll(".chip").forEach(chip => {
+        chip.classList.remove("selected");
+      });
+      el.classList.add("selected");
     }
 
     // Step 4 Fn
     function prepareSummary() {
       const text = document.getElementById('commentInput').value.trim();
-      const selectedTags = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.textContent);
-      feedbackData.comment = selectedTags.join(", ") + (text ? (selectedTags.length ? "; " : "") + text : "");
+      feedbackData.comment = text;
 
       document.getElementById('sumMode').textContent = feedbackData.anonymous ? 'Anonymous' : 'Named Guest';
       const ratings = {1: '😟 Not Good', 2: '😐 Okay', 3: '🙂 Great'};
@@ -372,14 +365,9 @@
     function submitFeedback() {
       console.log("Sending data to ALOE API...", feedbackData);
       goToStep(5);
-      // Simulate kiosk reset after 5 seconds
-      setTimeout(() => {
-        // Reset app state for next user (in a real app, you'd reset variables too)
-        window.location.reload();
-      }, 5000);
+      setTimeout(() => { window.location.reload(); }, 5000);
     }
 
-    // Initialize progress bar on load
     updateProgressBar(currentStep);
   </script>
 </body>
