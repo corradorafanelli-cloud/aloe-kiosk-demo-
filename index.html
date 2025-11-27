@@ -43,7 +43,7 @@
       border: 1px solid #F0EAE2;
       text-align: center;
       position: relative; overflow: hidden;
-      min-height: 720px;
+      min-height: 750px;
       display: flex; flex-direction: column; justify-content: center;
     }
     .app::before {
@@ -295,8 +295,8 @@
             <label class="sim-label" for="simGuestName">Simulate Guest Name:</label>
             <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi">
             <div class="modal-hint">
-                Tip: Use a new name (e.g. "Mario 2") for each new review.<br>
-                Re-using the exact same name triggers the "Already Received" block.
+                Demo Note: Change name (e.g. "Mario 2") to simulate a different guest.<br>
+                Same name triggers "Already Received".
             </div>
             
             <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm & Continue</button>
@@ -328,6 +328,7 @@
           <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
+          <!-- Il nome viene pulito dai numeri (es. Mario 1 -> Mario) -->
           <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Mario Rossi</span>
         </button>
       </div>
@@ -375,6 +376,8 @@
       <h1>Review Preview</h1>
       <p class="subtitle">Confirm your submission details.</p>
 
+      <span class="preview-label">Review Card</span>
+      
       <!-- CARD STYLE -->
       <div class="review-card">
           <div class="review-header">
@@ -404,7 +407,7 @@
       <div style="padding: 40px 0;">
         <span class="big-check">✅</span>
         <h1>Thank You!</h1>
-        <p class="subtitle">Your feedback is now live on ALOE.</p>
+        <p class="subtitle">Your feedback helps us improve future stays.</p>
         <p class="final-message">Resetting in <span id="countdown">5</span> seconds...</p>
       </div>
     </div>
@@ -425,7 +428,8 @@
 
   <script>
     const submittedGuests = new Set();
-    let currentGuestName = "Mario Rossi"; 
+    let rawGuestName = "Mario Rossi"; // Nome con eventuale numero (es. Mario 1)
+    let cleanGuestName = "Mario Rossi"; // Nome pulito (es. Mario) per la visualizzazione
     let feedbackData = { anonymous: true, rating: null, comment: "" };
     let currentStep = 0; 
     const totalSteps = 5; 
@@ -462,19 +466,24 @@
 
     function confirmSimulation() {
         const inputVal = document.getElementById('simGuestName').value.trim();
-        const guestName = inputVal || "Guest"; 
+        rawGuestName = inputVal || "Guest"; 
+        
+        // Pulizia nome (rimuove numeri finali per la visualizzazione pubblica)
+        cleanGuestName = rawGuestName.replace(/\s\d+$/, '');
+
         document.getElementById('simModal').classList.remove('visible');
 
-        // Controllo duplicati (Case insensitive)
-        if (submittedGuests.has(guestName.toLowerCase())) {
-            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} (Chianti Wine Tour) has already been submitted.`;
+        // Controllo duplicati basato sul nome RAW (con numeri)
+        // Esempio: Mario 1 != Mario 2, quindi passano entrambi.
+        // Ma entrambi appariranno come "Mario" nella card.
+        if (submittedGuests.has(rawGuestName.toLowerCase())) {
+            document.getElementById('errorMsgName').textContent = `Feedback for ${cleanGuestName} (ID: ${rawGuestName}) has already been submitted.`;
             goToStep(6); 
             setTimeout(() => { goToStep(0); }, 4000);
             return;
         }
 
-        currentGuestName = guestName;
-        document.getElementById('userNameDisplay').textContent = currentGuestName;
+        document.getElementById('userNameDisplay').textContent = cleanGuestName;
         document.body.style.cursor = 'wait';
         setTimeout(() => {
             document.body.style.cursor = 'default';
@@ -495,17 +504,14 @@
       setTimeout(() => goToStep(3), 300);
     }
 
-    // LOGICA CUMULATIVA TEMPLATE
     function addTemplate(text) {
       const textarea = document.getElementById("commentInput");
       let currentText = textarea.value.trim();
-      
       if (currentText.length > 0 && !currentText.endsWith('.') && !currentText.endsWith('!')) {
           currentText += ". ";
       } else if (currentText.length > 0) {
           currentText += " ";
       }
-      
       textarea.value = currentText + text;
       event.currentTarget.style.transform = "scale(0.95)";
       setTimeout(() => event.currentTarget.style.transform = "scale(1)", 150);
@@ -519,13 +525,13 @@
           document.getElementById('cardName').textContent = "Anonymous Guest";
           document.getElementById('cardAvatarIcon').textContent = "🕶️";
       } else {
-          document.getElementById('cardName').textContent = currentGuestName;
+          // Qui usiamo il nome PULITO (senza numeri)
+          document.getElementById('cardName').textContent = cleanGuestName;
           document.getElementById('cardAvatarIcon').textContent = "👤";
       }
 
       const date = new Date();
       const options = { month: 'short', day: 'numeric', year: 'numeric' };
-      // AGGIORNATO: Mostra il pacchetto specifico
       document.getElementById('cardDate').textContent = `Chianti Wine Tour • ${date.toLocaleDateString('en-US', options)}`;
 
       const starsMap = { 1: '★★☆☆☆', 2: '★★★☆☆', 3: '★★★★★' };
@@ -542,7 +548,8 @@
     }
 
     function submitFeedback() {
-      submittedGuests.add(currentGuestName.toLowerCase());
+      // Salva il nome RAW per bloccare futuri duplicati
+      submittedGuests.add(rawGuestName.toLowerCase());
       goToStep(5);
       
       let seconds = 5;
