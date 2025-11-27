@@ -17,6 +17,7 @@
       --aloe-border: #E8E0D5;
       --aloe-progress-inactive: #E0D6C8;
       --aloe-error: #D9534F;
+      --aloe-info: #2b6cb0;
     }
 
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -39,7 +40,7 @@
       border: 1px solid #F0EAE2;
       text-align: center;
       position: relative; overflow: hidden;
-      min-height: 720px; /* Altezza fissa per stabilità demo */
+      min-height: 720px;
       display: flex; flex-direction: column; justify-content: center;
     }
     .app::before {
@@ -47,7 +48,7 @@
         background: linear-gradient(to right, var(--aloe-primary), var(--aloe-accent));
     }
 
-    /* --- HEADER (Solo Progress Bar) --- */
+    /* --- HEADER --- */
     .header-container {
       position: absolute; top: 30px; left: 0; right: 0; transition: opacity 0.3s;
     }
@@ -81,13 +82,11 @@
     .qr-wrapper:active { transform: scale(0.96); border-color: var(--aloe-accent); background: #F4F8ED; }
     .qr-image {
       width: 180px; height: 180px; display: block;
-      /* Generatore QR reale per estetica */
       background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ALOE-CHECKOUT-FEEDBACK&color=3E2B1F');
       background-size: contain; opacity: 0.9;
     }
     .tap-hint { font-size: 13px; color: var(--aloe-accent); font-weight: 600; margin-top: 15px; animation: pulse 2s infinite; }
     
-    /* AVVISO VALIDITA' */
     .validity-note {
         font-size: 13px; color: #856404; background: #FFF3CD;
         padding: 10px 16px; border-radius: 12px; display: inline-block; margin-bottom: 24px;
@@ -125,7 +124,7 @@
       transform: scale(1.15); box-shadow: 0 8px 16px rgba(107, 142, 35, 0.2);
     }
 
-    /* --- STEP 3: CHIPS & TEXTAREA --- */
+    /* --- STEP 3: CHIPS --- */
     .chips-container {
         display: flex; flex-wrap: wrap; gap: 8px;
         justify-content: center; margin-bottom: 20px;
@@ -147,8 +146,7 @@
     }
     textarea:focus { outline: none; border-color: var(--aloe-primary); background: white; }
 
-    /* --- STEP 4: REVIEW CARD PREVIEW --- */
-    /* Questo stile simula esattamente il widget web di ALOE */
+    /* --- STEP 4: REVIEW CARD --- */
     .preview-label {
         font-size: 11px; text-transform: uppercase; color: var(--aloe-accent);
         font-weight: 700; margin-bottom: 12px; display: block; letter-spacing: 1px;
@@ -162,11 +160,6 @@
         margin-bottom: 24px;
         box-shadow: 0 8px 20px rgba(0,0,0,0.06);
         position: relative;
-    }
-    /* Decorazione "Virgolette" */
-    .review-card::after {
-        content: '”'; position: absolute; top: 10px; right: 20px;
-        font-size: 60px; color: #F0F0F0; font-family: serif; z-index: 0;
     }
     .review-header {
         display: flex; align-items: center; margin-bottom: 16px; position: relative; z-index: 1;
@@ -208,7 +201,7 @@
     .big-error { font-size: 72px; color: var(--aloe-error); margin-bottom: 20px; display: block; }
     .final-message { font-size: 14px; color: var(--aloe-text-light); margin-top: 30px; font-weight: 500; }
 
-    /* --- DEMO MODAL --- */
+    /* --- MODAL --- */
     .modal-overlay {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px);
@@ -218,24 +211,31 @@
     .modal-overlay.visible { opacity: 1; pointer-events: auto; }
     .modal-box {
         background: white; border: 2px solid var(--aloe-border);
-        padding: 32px 24px; border-radius: 24px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.1); width: 85%; text-align: center;
+        padding: 28px; border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.1); width: 90%; text-align: center;
     }
     .demo-badge {
         background: #333; color: white; padding: 4px 10px; border-radius: 12px;
-        font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 16px; display: inline-block;
+        font-size: 10px; text-transform: uppercase; font-weight: 700; margin-bottom: 16px; display: inline-block;
     }
-    .modal-input {
-        width: 100%; padding: 14px; border-radius: 12px; border: 2px solid var(--aloe-border);
-        margin-bottom: 20px; font-size: 16px; text-align: center; font-weight: 600; color: var(--aloe-text-dark);
+    .info-row {
+        display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;
+        border-bottom: 1px solid #eee; padding-bottom: 8px;
     }
-    .modal-input:focus { border-color: var(--aloe-primary); outline: none; }
+    .info-label { color: #888; font-weight: 500; }
+    .info-val { font-weight: 600; color: var(--aloe-text-dark); }
+    
+    .access-note {
+        background: #E6FFFA; border: 1px solid #B2F5EA; color: #2C7A7B;
+        padding: 10px; border-radius: 8px; font-size: 12px; margin: 20px 0; font-weight: 600;
+    }
 
   </style>
 </head>
 <body>
 
   <div class="app">
+    <!-- HEADER -->
     <div class="header-container hidden" id="mainHeader">
         <div class="progress-bar">
             <div class="progress-dot" id="dot1"></div>
@@ -246,20 +246,38 @@
         </div>
     </div>
 
+    <!-- MODAL SIMULAZIONE (Il "Popup" richiesto) -->
     <div class="modal-overlay" id="simModal">
         <div class="modal-box">
-            <span class="demo-badge">Demo Simulation</span>
-            <h2 style="font-size: 18px; color: var(--aloe-primary); margin-bottom: 10px;">Identify Guest</h2>
-            <p style="font-size:13px; color:#666; margin-bottom:15px; line-height:1.4;">
-                <strong>Note:</strong> In reality, the QR contains Name, Stay Duration, & Services automatically.
-                <br>This manual entry is just for the demo.
-            </p>
-            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi">
-            <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm Scan</button>
+            <span class="demo-badge">System Check: QR Data Read</span>
+            <h2 style="font-size: 18px; color: var(--aloe-primary); margin-bottom: 20px;">Verification Successful</h2>
+            
+            <!-- Dati simulati letti dal QR -->
+            <div class="info-row">
+                <span class="info-label">Guest Name:</span>
+                <span class="info-val" id="modalGuestName">Mario Rossi</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Package:</span>
+                <span class="info-val">Chianti Wine Tour</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Stay:</span>
+                <span class="info-val">3 Nights</span>
+            </div>
+
+            <!-- Nota Sicurezza per il Prof -->
+            <div class="access-note">
+                🔒 ACCESS GRANTED: User matches the authorized booker of this ALOE Provider Package.
+            </div>
+            
+            <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Continue</button>
         </div>
     </div>
 
+    <!-- STEP 0: STANDBY -->
     <div class="step active" id="step0" onclick="triggerScan()">
+      <!-- Avviso 20 Minuti (Spostato all'inizio) -->
       <div class="validity-note">⚠️ QR valid for 20 mins after check-out</div>
       
       <div class="qr-wrapper">
@@ -272,6 +290,7 @@
     </div>
 
 
+    <!-- STEP 1: Privacy Choice -->
     <div class="step" id="step1">
       <h1>Share Your Feedback</h1>
       <p class="subtitle">How would you like to submit your review?</p>
@@ -281,11 +300,12 @@
           <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Guest Name</span>
+          <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Mario Rossi</span>
         </button>
       </div>
     </div>
 
+    <!-- STEP 2: Rating -->
     <div class="step" id="step2">
       <h1>How was your stay?</h1>
       <p class="subtitle">Tap an emoji to rate your experience.</p>
@@ -302,30 +322,33 @@
       </div>
     </div>
 
+    <!-- STEP 3: Details -->
     <div class="step" id="step3">
       <h1>Add a quick comment?</h1>
       <p class="subtitle">Tap phrases to build your review.</p>
 
       <div class="chips-container">
-        <div class="chip" onclick="addTemplate('The room was perfectly clean and comfortable.')">✨ Room was perfect</div>
-        <div class="chip" onclick="addTemplate('The staff was incredibly welcoming and helpful.')">🏨 Staff was amazing</div>
-        <div class="chip" onclick="addTemplate('The breakfast had great variety and quality.')">🍳 Delicious breakfast</div>
-        <div class="chip" onclick="addTemplate('The check-in process was a bit slow.')">🐢 Slow check-in</div>
+        <div class="chip" onclick="addTemplate('The experience was perfectly organized.')">✨ Perfectly organized</div>
+        <div class="chip" onclick="addTemplate('The staff was incredibly welcoming.')">🏨 Welcoming staff</div>
+        <div class="chip" onclick="addTemplate('Great value for the price.')">💰 Great value</div>
+        <div class="chip" onclick="addTemplate('Transportation was a bit delayed.')">⚠️ Transport delayed</div>
       </div>
       
       <textarea id="commentInput" placeholder="Add message here (optional)..."></textarea>
 
-      <button class="btn-primary btn" onclick="prepareSummary()" style="width:100%">Preview Feedback</button>
+      <button class="btn-primary btn" onclick="prepareSummary()" style="width:100%">Preview Review</button>
       <div class="footer">
          <span class="link" onclick="prepareSummary()">Skip & Preview</span>
       </div>
     </div>
 
+    <!-- STEP 4: Review Card Preview -->
     <div class="step" id="step4">
-      <h1>Preview Review</h1>
-      <p class="subtitle">This is how it will appear on ALOE.</p>
+      <h1>Review Preview</h1>
+      <!-- Testo modificato: Niente meta-commenti -->
+      <p class="subtitle">Confirm your submission details.</p>
 
-      <span class="preview-label">Website Widget Preview</span>
+      <span class="preview-label">ALOE Platform Preview</span>
       
       <div class="review-card">
           <div class="review-header">
@@ -334,7 +357,8 @@
               </div>
               <div class="review-info">
                   <h3 id="cardName">Mario Rossi</h3>
-                  <span id="cardDate">Verified Stay • Kiosk</span>
+                  <!-- Specificato il pacchetto ALOE -->
+                  <span id="cardDate">Chianti Wine Tour • Verified Guest</span>
               </div>
           </div>
           <div class="review-stars" id="cardStars">★★★★★</div>
@@ -349,21 +373,23 @@
       </div>
     </div>
 
+    <!-- STEP 5: Thanks -->
     <div class="step" id="step5">
       <div style="padding: 40px 0;">
         <span class="big-check">✅</span>
         <h1>Thank You!</h1>
-        <p class="subtitle">Your feedback is now live.</p>
+        <p class="subtitle">Your feedback is now live on ALOE.</p>
         <p class="final-message">Resetting in <span id="countdown">5</span> seconds...</p>
       </div>
     </div>
 
+    <!-- STEP 6: ERROR -->
     <div class="step" id="step6">
       <div style="padding: 40px 0;">
         <span class="big-error">⛔</span>
         <h1 style="color: var(--aloe-error); font-size:22px;">Already Received</h1>
         <p class="subtitle" id="errorMsgName">
-          Feedback for this room/stay has already been submitted.
+          Feedback for this package has already been submitted by the booker.
         </p>
         <p class="final-message">Resetting...</p>
       </div>
@@ -373,7 +399,7 @@
 
   <script>
     const submittedGuests = new Set();
-    let currentGuestName = "Guest";
+    let currentGuestName = "Mario Rossi"; // Default simulation name
     let feedbackData = { anonymous: true, rating: null, comment: "" };
     let currentStep = 0; 
     const totalSteps = 5; 
@@ -404,23 +430,19 @@
     }
 
     function triggerScan() {
-        document.getElementById('simModal').classList.add('visible');
-        setTimeout(() => document.getElementById('simGuestName').focus(), 100);
-    }
-
-    function confirmSimulation() {
-        const inputVal = document.getElementById('simGuestName').value.trim();
-        const guestName = inputVal || "Guest"; 
-        document.getElementById('simModal').classList.remove('visible');
-
-        if (submittedGuests.has(guestName.toLowerCase())) {
-            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} has already been submitted.`;
+        // Check if already submitted
+        if (submittedGuests.has(currentGuestName.toLowerCase())) {
             goToStep(6); 
             setTimeout(() => { goToStep(0); }, 4000);
             return;
         }
+        // Show Simulation Modal
+        document.getElementById('simModal').classList.add('visible');
+    }
 
-        currentGuestName = guestName;
+    function confirmSimulation() {
+        document.getElementById('simModal').classList.remove('visible');
+        
         document.getElementById('userNameDisplay').textContent = currentGuestName;
         document.body.style.cursor = 'wait';
         setTimeout(() => {
@@ -446,15 +468,13 @@
     function addTemplate(text) {
       const textarea = document.getElementById("commentInput");
       let currentText = textarea.value.trim();
-      
       if (currentText.length > 0 && !currentText.endsWith('.') && !currentText.endsWith('!')) {
           currentText += ". ";
       } else if (currentText.length > 0) {
           currentText += " ";
       }
-      
       textarea.value = currentText + text;
-      // Effetto click
+      // Flash effect
       event.currentTarget.style.transform = "scale(0.95)";
       setTimeout(() => event.currentTarget.style.transform = "scale(1)", 150);
     }
@@ -463,7 +483,6 @@
       const text = document.getElementById('commentInput').value.trim();
       feedbackData.comment = text;
 
-      // 1. Nome/Anonimo
       if (feedbackData.anonymous) {
           document.getElementById('cardName').textContent = "Anonymous Guest";
           document.getElementById('cardAvatarIcon').textContent = "🕶️";
@@ -472,12 +491,11 @@
           document.getElementById('cardAvatarIcon').textContent = "👤";
       }
 
-      // 2. Data
       const date = new Date();
       const options = { month: 'short', day: 'numeric', year: 'numeric' };
-      document.getElementById('cardDate').textContent = `Stayed on ${date.toLocaleDateString('en-US', options)} • Verified by Kiosk`;
+      // AGGIORNATO: Mostra il pacchetto specifico
+      document.getElementById('cardDate').textContent = `Chianti Wine Tour • ${date.toLocaleDateString('en-US', options)}`;
 
-      // 3. Stelle
       const starsMap = { 1: '★★☆☆☆', 2: '★★★☆☆', 3: '★★★★★' };
       const starsColor = { 1: '#D9534F', 2: '#F0AD4E', 3: '#6B8E23' }; 
       
@@ -485,7 +503,6 @@
       starEl.textContent = starsMap[feedbackData.rating] || '☆☆☆☆☆';
       starEl.style.color = starsColor[feedbackData.rating] || '#ccc';
 
-      // 4. Commento
       document.getElementById('cardComment').textContent = 
         feedbackData.comment ? `"${feedbackData.comment}"` : "No written comment.";
 
@@ -494,7 +511,6 @@
 
     function submitFeedback() {
       submittedGuests.add(currentGuestName.toLowerCase());
-      console.log(`Feedback submitted for ${currentGuestName}`);
       goToStep(5);
       
       let seconds = 5;
