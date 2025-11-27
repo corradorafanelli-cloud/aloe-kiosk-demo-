@@ -3,89 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <title>ALOE Kiosk Feedback Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* --- ALOE Brand Colors & Theme --- */
+    /* --- ALOE ORGANIC BRAND PALETTE --- */
     :root {
-      --aloe-green-dark: #1a5c3f; /* Darker Green for primary buttons, accents */
-      --aloe-green-med: #4a8c6f;  /* Medium Green for borders, highlights */
-      --aloe-green-light: #e0f2e9; /* Light Green for backgrounds, selected states */
-      --aloe-beige: #f7f3e8;       /* Beige for main background */
-      --aloe-text-dark: #2d3e35;   /* Dark text color */
-      --aloe-text-light: #6b7c73;  /* Lighter text color for subtitles */
+      --aloe-primary: #8B5A2B;    /* Warm Brown for main actions/text */
+      --aloe-accent: #6B8E23;     /* Olive Green for success/highlights */
+      --aloe-bg-warm: #F9F6F0;    /* Creamy beige background */
+      --aloe-bg-container: #FFFFFF; /* Pure white container */
+      --aloe-text-dark: #3E2B1F;  /* Dark coffee color text */
+      --aloe-text-light: #8C7B70; /* Muted brown for subtitles */
+      --aloe-border: #E8E0D5;     /* Subtle beige borders */
     }
 
     * {
       box-sizing: border-box;
-      font-family: 'Montserrat', 'Segoe UI', sans-serif; /* More modern, clean font */
+      /* Prevent text selection for kiosk feel */
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       margin: 0;
-      background: var(--aloe-beige); /* Beige background */
+      font-family: 'Poppins', sans-serif;
+      /* A warm, organic gradient background */
+      background: linear-gradient(135deg, var(--aloe-bg-warm) 0%, #F3EDE2 100%);
       color: var(--aloe-text-dark);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      /* Optional: Subtle leaf/organic pattern background like the slides */
-      background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 Q25,25 50,50 Q75,75 100,50" stroke="%23d0dec9" fill="none" opacity="0.3"/></svg>');
-      background-size: 200px 200px;
+      padding: 20px;
     }
 
     /* --- Main App Container --- */
     .app {
       width: 100%;
-      max-width: 460px; /* Slightly wider for better spacing */
-      background: #ffffff;
-      border-radius: 24px; /* More rounded corners */
-      box-shadow: 0 15px 40px rgba(26, 92, 63, 0.15); /* Soft green shadow */
-      padding: 32px 28px 36px;
-      border: 1px solid var(--aloe-green-light); /* Subtle green border */
-      text-align: center; /* Default center text like kiosks */
+      max-width: 480px; /* Slightly wider for presence */
+      background: var(--aloe-bg-container);
+      border-radius: 30px; /* Super soft corners */
+      /* Deep, soft shadow for a floating effect */
+      box-shadow: 0 20px 40px -10px rgba(62, 43, 31, 0.15);
+      padding: 40px 32px;
+      border: 1px solid #F0EAE2;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Subtle top accent bar */
+    .app::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(to right, var(--aloe-primary), var(--aloe-accent));
     }
 
     /* --- Header & Titles --- */
     .header-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      color: var(--aloe-green-dark);
       font-weight: 700;
-      font-size: 18px;
+      font-size: 20px;
+      color: var(--aloe-primary);
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
-    .header-logo svg {
-        margin-right: 8px;
-        fill: var(--aloe-green-dark);
-        width: 24px; height: 24px;
-    }
-
 
     h1 {
-      font-size: 24px; /* Larger title */
+      font-size: 26px;
       font-weight: 700;
       margin: 0 0 12px;
-      color: var(--aloe-green-dark); /* Dark green title */
+      color: var(--aloe-text-dark);
+      line-height: 1.3;
     }
 
     p.subtitle {
-      margin: 0 0 24px;
-      font-size: 15px;
+      margin: 0 auto 32px;
+      font-size: 16px;
       color: var(--aloe-text-light);
       line-height: 1.5;
+      max-width: 90%;
     }
 
-    /* --- Steps & Animation --- */
-    .step {
-      display: none;
-      animation: fadeIn 0.3s ease-out;
-    }
-    .step.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+    /* --- Steps Animation --- */
+    .step { display: none; animation: slideUp Fade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .step.active { display: block; }
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -93,412 +97,259 @@
     .buttons-stack {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      margin: 24px 0 16px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
     .btn {
-      padding: 14px 20px;
-      border-radius: 12px;
-      border: 2px solid var(--aloe-green-med);
-      background: #ffffff;
-      color: var(--aloe-green-dark);
-      font-size: 16px;
+      padding: 16px 24px;
+      border-radius: 50px; /* Pill shape */
+      border: 2px solid var(--aloe-border);
+      background: var(--aloe-bg-container);
+      color: var(--aloe-text-dark);
+      font-size: 17px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
       cursor: pointer;
-      transition: all 0.2s ease-out;
-      box-shadow: 0 2px 4px rgba(26, 92, 63, 0.05);
+      transition: all 0.2s;
     }
+    .btn:active { transform: scale(0.98); }
 
-    .btn:hover {
-      background: var(--aloe-green-light);
-      border-color: var(--aloe-green-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(26, 92, 63, 0.1);
-    }
+    .btn-icon { font-size: 22px; }
 
     .btn-primary {
-      background: var(--aloe-green-dark);
+      background: var(--aloe-primary);
       color: white;
-      border-color: var(--aloe-green-dark);
+      border: none;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.3);
+    }
+    .btn-primary:hover { background: #7A4E25; }
+    .btn-primary:disabled {
+        background: #CDBBAE;
+        box-shadow: none;
+        cursor: not-allowed;
     }
 
-    .btn-primary:hover {
-      background: #144a32; /* Slightly darker on hover */
-      border-color: #144a32;
-    }
-
-    /* --- Step 2: Rating Emojis --- */
+    /* --- Step 2: Big Emojis --- */
     .emoji-row {
       display: flex;
       justify-content: center;
-      gap: 18px;
-      margin: 30px 0 20px;
+      gap: 24px;
+      margin: 40px 0;
     }
-
     .btn-emoji {
-      flex: 0 0 auto; /* Don't stretch */
-      width: 70px; height: 70px; /* Square-ish */
-      border-radius: 50%; /* Circles */
-      font-size: 36px;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 3px solid #e0e0e0; /* Light gray default border */
-      background: #ffffff;
-      transition: all 0.2s ease-out;
-    }
-    /* Specific Emoji Styles & Colors */
-    #emoji1:hover, #emoji1.selected {
-        border-color: #dc3545; /* Red for Sad */
-        background: #fde0e3;
-    }
-    #emoji2:hover, #emoji2.selected {
-        border-color: #ffc107; /* Yellow for Neutral */
-        background: #fff3cd;
-    }
-    #emoji3:hover, #emoji3.selected {
-        border-color: #28a745; /* Green for Happy */
-        background: #d4edda;
-    }
-    /* Add a subtle bounce on selection */
-    .btn-emoji.selected {
-        transform: scale(1.1);
-    }
-
-    /* --- Step 3: Comments --- */
-    .chips-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        margin: 16px 0 24px;
-    }
-
-    .chip {
-      padding: 10px 16px;
-      border-radius: 24px; /* Fully rounded chips */
-      border: 1px solid var(--aloe-green-med);
-      background: #ffffff;
-      color: var(--aloe-text-dark);
-      font-size: 14px;
-      font-weight: 500;
+      width: 85px; height: 85px;
+      border-radius: 50%;
+      font-size: 42px;
+      border: 3px solid var(--aloe-border);
+      background: #FFFFFF;
       cursor: pointer;
-      transition: all 0.2s ease-out;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy effect */
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-emoji.selected {
+      border-color: var(--aloe-accent);
+      background: #F4F8ED; /* Very light green bg */
+      transform: scale(1.15);
+      box-shadow: 0 8px 16px rgba(107, 142, 35, 0.2);
     }
 
-    .chip:hover {
-        background: var(--aloe-green-light);
+    /* --- Step 3: Chips & Inputs --- */
+    .chips-container {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        justify-content: center; margin-bottom: 24px;
     }
-
+    .chip {
+      padding: 12px 18px;
+      border-radius: 30px;
+      border: 1px solid var(--aloe-border);
+      background: #FAFAFA;
+      color: var(--aloe-text-dark);
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
     .chip.selected {
-      background: var(--aloe-green-dark);
+      background: var(--aloe-primary);
       color: white;
-      border-color: var(--aloe-green-dark);
+      border-color: var(--aloe-primary);
+      box-shadow: 0 2px 8px rgba(139, 90, 43, 0.2);
     }
 
     textarea {
-      width: 100%;
-      min-height: 80px;
-      resize: none;
-      border-radius: 14px;
-      border: 2px solid var(--aloe-green-med);
-      padding: 12px 14px;
-      font-size: 14px;
-      font-family: inherit;
-      background: #f9fdfb; /* Slightly off-white */
-      margin-bottom: 20px;
+      width: 100%; min-height: 100px; resize: none;
+      border-radius: 16px;
+      border: 2px solid var(--aloe-border);
+      padding: 14px;
+      font-size: 15px; font-family: inherit;
+      background: #FAFAFA;
+      margin-bottom: 24px;
+      color: var(--aloe-text-dark);
     }
+    textarea:focus { outline: none; border-color: var(--aloe-primary); background: white; }
 
-    textarea:focus {
-      outline: none;
-      border-color: var(--aloe-green-dark);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(26, 92, 63, 0.2);
+    /* --- Summary Box --- */
+    .summary-box {
+      background: #F4F8ED; /* Light green tint */
+      border-radius: 20px;
+      padding: 20px;
+      text-align: left;
+      margin-bottom: 24px;
     }
+    .summary-item {
+        margin-bottom: 8px; font-size: 15px;
+        display: flex;
+    }
+    .summary-label { font-weight: 600; color: var(--aloe-primary); width: 90px; }
 
-    /* --- Footer & Navigation --- */
+    /* --- Footer Links --- */
     .footer {
       margin-top: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      color: var(--aloe-text-light);
+      font-size: 15px; color: var(--aloe-text-light);
+      display: flex; justify-content: center; gap: 20px;
     }
-    .footer.centered {
-        justify-content: center;
-    }
-
     .link {
-      cursor: pointer;
-      color: var(--aloe-green-med);
-      font-weight: 600;
-      text-decoration: none; /* Removed underline for cleaner look */
-      font-size: 14px;
-      transition: color 0.2s;
+      cursor: pointer; color: var(--aloe-primary); font-weight: 600;
+      text-decoration: none; transition: opacity 0.2s;
     }
-    .link:hover {
-        color: var(--aloe-green-dark);
-    }
+    .link:hover { opacity: 0.8; }
 
-    /* --- Step 4: Summary --- */
-    .summary-box {
-      background: var(--aloe-green-light);
-      border-radius: 16px;
-      padding: 16px;
-      font-size: 14px;
-      margin: 20px 0 24px;
-      text-align: left; /* Align summary text left */
-      border: 1px solid var(--aloe-green-med);
-    }
-
-    .summary-item {
-      margin-bottom: 10px;
-      display: flex;
-      align-items: flex-start;
-    }
-    .summary-item:last-child { margin-bottom: 0; }
-    .summary-label {
-        font-weight: 600;
-        color: var(--aloe-green-dark);
-        margin-right: 8px;
-        min-width: 70px;
-    }
-    .summary-value {
-        color: var(--aloe-text-dark);
-        flex: 1;
-    }
-
-
-    /* --- Step 5: Thank You --- */
-    .big-emoji {
-      font-size: 56px;
-      margin-bottom: 16px;
-      display: block;
-      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes popIn {
-        from { transform: scale(0.5); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-
-    /* --- Icons --- */
-    .icon-privacy { font-size: 20px; }
-    .icon-btn { margin-right: 8px; }
+    /* --- Success --- */
+    .big-check { font-size: 64px; color: var(--aloe-accent); margin-bottom: 16px; display: block; }
 
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <div class="app">
-    <div class="header-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-        ALOE Feedback Kiosk
-    </div>
-
+    <div class="header-logo">🌿 ALOE KIOSK</div>
 
     <div class="step active" id="step1">
-      <h1>How would you like to leave your feedback?</h1>
-      <p class="subtitle">
-        Choose your privacy level. You can stay anonymous or share your name.
-      </p>
+      <h1>How do you want to share?</h1>
+      <p class="subtitle">Choose your privacy level below.</p>
+
       <div class="buttons-stack">
         <button class="btn" onclick="selectMode('anonymous')">
-          <span class="icon-privacy">🕶️</span> Leave it anonymously
+          <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          <span class="icon-privacy">🙋</span> With my name (<span id="demoNameInline">Guest 123</span>)
+          <span class="btn-icon">👤</span> Submit with Name
         </button>
-      </div>
-      <div class="footer centered">
-        <span class="link" onclick="selectMode('anonymous')">Skip &amp; stay anonymous</span>
       </div>
     </div>
 
     <div class="step" id="step2">
       <h1>How was your stay?</h1>
-      <p class="subtitle">
-        Tap an emoji to rate your overall experience.
-      </p>
+      <p class="subtitle">Tap an emoji to rate your experience.</p>
+
       <div class="emoji-row">
-        <button class="btn btn-emoji" id="emoji1" onclick="selectRating(1)">😟</button>
-        <button class="btn btn-emoji" id="emoji2" onclick="selectRating(2)">😐</button>
-        <button class="btn btn-emoji" id="emoji3" onclick="selectRating(3)">🙂</button>
+        <button class="btn-emoji" id="emoji1" onclick="selectRating(1)">😟</button>
+        <button class="btn-emoji" id="emoji2" onclick="selectRating(2)">😐</button>
+        <button class="btn-emoji" id="emoji3" onclick="selectRating(3)">🙂</button>
       </div>
+
+      <button class="btn-primary btn" id="btnNextStep2" onclick="goToStep(3)" disabled style="width:100%">Next step</button>
       <div class="footer">
         <span class="link" onclick="goToStep(1)">Back</span>
-        <button class="btn-primary btn" id="step2NextBtn" onclick="goToStep(3)" disabled style="opacity: 0.6; cursor: not-allowed;">Next</button>
       </div>
     </div>
 
     <div class="step" id="step3">
-      <h1>Care to add a short comment?</h1>
-      <p class="subtitle">
-        Optional: Tap a quick phrase or write your own note.
-      </p>
+      <h1>Add a quick comment?</h1>
+      <p class="subtitle">Optional: Tap a tag or write a note.</p>
+
       <div class="chips-container">
-        <div class="chip" onclick="applyTemplate('Everything was perfect 👌')">
-          <span>👌</span> Everything was perfect
-        </div>
-        <div class="chip" onclick="applyTemplate('Staff was kind, room could be improved')">
-          <span>🏨</span> Staff kind, room needs improvement
-        </div>
-        <div class="chip" onclick="applyTemplate('I had an issue I want to report')">
-          <span>⚠️</span> I had an issue to report
-        </div>
+        <div class="chip" onclick="toggleChip(this)">👌 Perfect stay</div>
+        <div class="chip" onclick="toggleChip(this)">🏨 Staff was kind</div>
+        <div class="chip" onclick="toggleChip(this)">🍳 Great breakfast</div>
+        <div class="chip" onclick="toggleChip(this)">⚠️ I had an issue</div>
       </div>
-      <textarea id="commentInput" placeholder="Write here if you want to add details…"></textarea>
+      <textarea id="commentInput" placeholder="Type your message here (optional)..."></textarea>
+
+      <button class="btn-primary btn" onclick="prepareSummary()" style="width:100%">Review Feedback</button>
       <div class="footer">
-        <span class="link" onclick="skipComment()">Skip comment</span>
-        <button class="btn-primary btn" onclick="prepareSummary()">Next</button>
+         <span class="link" onclick="prepareSummary()">Skip & Review</span>
       </div>
     </div>
-    
+
     <div class="step" id="step4">
-      <h1>Confirm your feedback</h1>
-      <p class="subtitle">
-        Please review before sending.
-      </p>
+      <h1>Is this correct?</h1>
+      <p class="subtitle">Please review before sending.</p>
+
       <div class="summary-box">
-        <div class="summary-item">
-            <span class="summary-label">Mode:</span>
-            <span class="summary-value" id="summaryMode"></span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label">Rating:</span>
-            <span class="summary-value" id="summaryRating"></span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label">Comment:</span>
-            <span class="summary-value" id="summaryComment"></span>
-        </div>
+        <div class="summary-item"><span class="summary-label">Privacy:</span><span id="sumMode"></span></div>
+        <div class="summary-item"><span class="summary-label">Rating:</span><span id="sumRating"></span></div>
+        <div class="summary-item"><span class="summary-label">Note:</span><span id="sumComment"></span></div>
       </div>
-      <div class="buttons-stack">
-        <button class="btn-primary btn" onclick="submitFeedback()">
-            <span>🚀</span> Send Feedback
-        </button>
-        <button class="btn" onclick="goToStep(3)">Edit Comment</button>
-      </div>
-      <div class="footer centered">
-        <span class="link" onclick="goToStep(2)">Back to Rating</span>
+
+      <button class="btn-primary btn" onclick="submitFeedback()" style="width:100%">🚀 Send Feedback</button>
+      <div class="footer">
+        <span class="link" onclick="goToStep(3)">Edit details</span>
       </div>
     </div>
 
     <div class="step" id="step5">
-        <span class="big-emoji">✨</span>
-        <h1>Thank you for your feedback!</h1>
-        <p class="subtitle">
-          Your input helps the hotel and ALOE improve future stays.
-        </p>
-        <p style="margin-top: 30px; font-size: 13px; color: var(--aloe-text-light);">Closing in 5 seconds...</p>
+      <div style="padding: 40px 0;">
+        <span class="big-check">✅</span>
+        <h1>Thank You!</h1>
+        <p class="subtitle">Your feedback helps us improve.</p>
+      </div>
     </div>
+
   </div>
 
   <script>
-    // 🔹 Qui simuliamo i dati che in produzione arriverebbero da RFID / QR + PMS/ALOE
-    const feedbackData = {
-      stayId: "DEMO_STAY_123",
-      hotelId: "DEMO_HOTEL_001",
-      anonymous: true,
-      name: "Guest 123",
-      rating: null,
-      comment: "",
-      channel: "KIOSK_DEMO",
-      timestamp: null
+    // Dati simulati
+    let feedbackData = {
+      anonymous: true, rating: null, comment: "", tags: []
     };
 
-    function goToStep(stepNumber) {
-      document.querySelectorAll(".step").forEach(step => {
-        step.classList.remove("active");
-      });
-      document.getElementById("step" + stepNumber).classList.add("active");
+    function goToStep(stepNum) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + stepNum).classList.add('active');
     }
 
-    // STEP 1: scelta modalità
+    // Step 1 Fn
     function selectMode(mode) {
-      feedbackData.anonymous = (mode === "anonymous");
+      feedbackData.anonymous = (mode === 'anonymous');
       goToStep(2);
     }
 
-    // STEP 2: selezione rating
-    function selectRating(value) {
-      feedbackData.rating = value;
-      [1, 2, 3].forEach(v => {
-        document.getElementById("emoji" + v).classList.remove("selected");
-      });
-      document.getElementById("emoji" + value).classList.add("selected");
-
-      // Enable the Next button once a rating is picked
-      const nextBtn = document.getElementById("step2NextBtn");
-      nextBtn.disabled = false;
-      nextBtn.style.opacity = 1;
-      nextBtn.style.cursor = "pointer";
-
-      // Optional: Auto-advance after a short delay for faster flow
-      // setTimeout(() => goToStep(3), 500);
+    // Step 2 Fn
+    function selectRating(val) {
+      feedbackData.rating = val;
+      document.querySelectorAll('.btn-emoji').forEach(b => b.classList.remove('selected'));
+      document.getElementById('emoji' + val).classList.add('selected');
+      document.getElementById('btnNextStep2').disabled = false;
+      // Auto-advance for speed (optional, remove if preferred)
+      setTimeout(() => goToStep(3), 300);
     }
 
-    // STEP 3: applica template al commento
-    function applyTemplate(text) {
-      const textarea = document.getElementById("commentInput");
-      textarea.value = text;
-      feedbackData.comment = text;
-      document.querySelectorAll(".chip").forEach(chip => {
-        chip.classList.remove("selected");
-      });
-      event.currentTarget.classList.add("selected");
+    // Step 3 Fn
+    function toggleChip(chip) {
+        chip.classList.toggle('selected');
+        // In a real app, we'd collect selected tags here
     }
 
-    function skipComment() {
-      document.getElementById("commentInput").value = "";
-      feedbackData.comment = "";
-      prepareSummary();
-    }
-
-    // STEP 4: prepara riepilogo
+    // Step 4 Fn
     function prepareSummary() {
-      const textarea = document.getElementById("commentInput");
-      feedbackData.comment = textarea.value.trim();
+      const text = document.getElementById('commentInput').value.trim();
+      // Collect selected tags
+      const selectedTags = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.textContent);
+      feedbackData.comment = selectedTags.join(", ") + (text ? (selectedTags.length ? "; " : "") + text : "");
 
-      document.getElementById("summaryMode").textContent = feedbackData.anonymous
-        ? "Anonymous feedback"
-        : `With name (${feedbackData.name})`;
-
-      const ratingMap = {
-        1: "😟 Not good",
-        2: "😐 Okay",
-        3: "🙂 Great"
-      };
-      document.getElementById("summaryRating").innerHTML =
-        ratingMap[feedbackData.rating] || "Not selected";
-
-      document.getElementById("summaryComment").textContent =
-        feedbackData.comment ? `"${feedbackData.comment}"` : "(None)";
-
+      document.getElementById('sumMode').textContent = feedbackData.anonymous ? 'Anonymous' : 'Named Guest';
+      const ratings = {1: '😟 Not Good', 2: '😐 Okay', 3: '🙂 Great'};
+      document.getElementById('sumRating').textContent = ratings[feedbackData.rating];
+      document.getElementById('sumComment').textContent = feedbackData.comment || '(None)';
       goToStep(4);
     }
 
-    // STEP 4: invio feedback
+    // Step 5 Fn
     function submitFeedback() {
-      feedbackData.timestamp = new Date().toISOString();
-      console.log("Feedback sent:", feedbackData);
+      console.log("Sending data to ALOE API...", feedbackData);
       goToStep(5);
-
-      // Optional: Reset flow after a few seconds
-      setTimeout(() => {
-        // Reset data & UI here if needed for a real kiosk loop
-        // window.location.reload();
-      }, 5000);
+      // Simulate kiosk reset
+      setTimeout(() => { window.location.reload(); }, 4000);
     }
   </script>
 </body>
