@@ -18,6 +18,9 @@
       --aloe-progress-inactive: #E0D6C8;
       --aloe-error: #D9534F;
       --aloe-info: #2b6cb0;
+      --aloe-success-light: #E6FFFA;
+      --aloe-success-border: #B2F5EA;
+      --aloe-success-text: #2C7A7B;
     }
 
     * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -40,7 +43,7 @@
       border: 1px solid #F0EAE2;
       text-align: center;
       position: relative; overflow: hidden;
-      min-height: 720px;
+      min-height: 750px; /* Altezza aumentata per gestire il contenuto */
       display: flex; flex-direction: column; justify-content: center;
     }
     .app::before {
@@ -225,9 +228,24 @@
     .info-label { color: #888; font-weight: 500; }
     .info-val { font-weight: 600; color: var(--aloe-text-dark); }
     
+    /* Nuovi stili per il box di accesso */
     .access-note {
-        background: #E6FFFA; border: 1px solid #B2F5EA; color: #2C7A7B;
-        padding: 10px; border-radius: 8px; font-size: 12px; margin: 20px 0; font-weight: 600;
+        background: var(--aloe-success-light); border: 1px solid var(--aloe-success-border); color: var(--aloe-success-text);
+        padding: 12px; border-radius: 12px; font-size: 13px; margin-top: 15px; font-weight: 600; line-height: 1.4;
+    }
+    
+    .access-subnote {
+        font-size: 11px; color: #666; margin-top: 8px; margin-bottom: 20px; font-style: italic; line-height: 1.3;
+    }
+
+    .modal-input {
+        width: 100%; padding: 14px; border-radius: 12px; border: 2px solid var(--aloe-border);
+        margin-bottom: 10px; font-size: 16px; text-align: center; font-weight: 600; color: var(--aloe-text-dark);
+    }
+    .modal-input:focus { border-color: var(--aloe-primary); outline: none; }
+    
+    .modal-hint {
+        font-size: 11px; color: #999; margin-bottom: 20px;
     }
 
   </style>
@@ -249,7 +267,7 @@
     <!-- MODAL SIMULAZIONE (Il "Popup" richiesto) -->
     <div class="modal-overlay" id="simModal">
         <div class="modal-box">
-            <span class="demo-badge">System Check: QR Data Read</span>
+            <span class="demo-badge" style="background: var(--aloe-accent);">SYSTEM CHECK: QR Data Read</span>
             <h2 style="font-size: 18px; color: var(--aloe-primary); margin-bottom: 20px;">Verification Successful</h2>
             
             <!-- Dati simulati letti dal QR -->
@@ -266,12 +284,22 @@
                 <span class="info-val">3 Nights</span>
             </div>
 
-            <!-- Nota Sicurezza per il Prof -->
+            <!-- Nota Sicurezza aggiornata -->
             <div class="access-note">
-                🔒 ACCESS GRANTED: User matches the authorized booker of this ALOE Provider Package.
+                ✅ Access granted. You can now leave your review.
+            </div>
+            <div class="access-subnote">
+                (Review will appear on ALOE only if the user booked an ALOE Package)
             </div>
             
-            <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Continue</button>
+            <!-- Input per la Demo -->
+            <div style="text-align:left; font-size: 12px; font-weight:600; color:var(--aloe-primary); margin-bottom:5px;">Demo Note:</div>
+            <div class="modal-hint" style="margin-bottom:10px;">
+                You can edit the name here to simulate different guests.
+            </div>
+            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi" style="margin-bottom: 10px;">
+            
+            <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm & Continue</button>
         </div>
     </div>
 
@@ -328,10 +356,10 @@
       <p class="subtitle">Tap phrases to build your review.</p>
 
       <div class="chips-container">
-        <div class="chip" onclick="addTemplate('The experience was perfectly organized.')">✨ Perfectly organized</div>
-        <div class="chip" onclick="addTemplate('The staff was incredibly welcoming.')">🏨 Welcoming staff</div>
-        <div class="chip" onclick="addTemplate('Great value for the price.')">💰 Great value</div>
-        <div class="chip" onclick="addTemplate('Transportation was a bit delayed.')">⚠️ Transport delayed</div>
+        <div class="chip" onclick="addTemplate('The room was perfectly clean and comfortable.')">✨ Room was perfect</div>
+        <div class="chip" onclick="addTemplate('The staff was incredibly welcoming and helpful.')">🏨 Staff was amazing</div>
+        <div class="chip" onclick="addTemplate('The breakfast had great variety and quality.')">🍳 Delicious breakfast</div>
+        <div class="chip" onclick="addTemplate('The check-in process was a bit slow.')">🐢 Slow check-in</div>
       </div>
       
       <textarea id="commentInput" placeholder="Add message here (optional)..."></textarea>
@@ -345,11 +373,9 @@
     <!-- STEP 4: Review Card Preview -->
     <div class="step" id="step4">
       <h1>Review Preview</h1>
-      <!-- Testo modificato: Niente meta-commenti -->
       <p class="subtitle">Confirm your submission details.</p>
 
-      <span class="preview-label">ALOE Platform Preview</span>
-      
+      <!-- CARD STYLE -->
       <div class="review-card">
           <div class="review-header">
               <div class="review-avatar">
@@ -399,7 +425,7 @@
 
   <script>
     const submittedGuests = new Set();
-    let currentGuestName = "Mario Rossi"; // Default simulation name
+    let currentGuestName = "Mario Rossi"; 
     let feedbackData = { anonymous: true, rating: null, comment: "" };
     let currentStep = 0; 
     const totalSteps = 5; 
@@ -441,8 +467,19 @@
     }
 
     function confirmSimulation() {
+        const inputVal = document.getElementById('simGuestName').value.trim();
+        const guestName = inputVal || "Guest"; 
         document.getElementById('simModal').classList.remove('visible');
-        
+
+        // Controllo duplicati (Case insensitive)
+        if (submittedGuests.has(guestName.toLowerCase())) {
+            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} (Chianti Wine Tour) has already been submitted.`;
+            goToStep(6); 
+            setTimeout(() => { goToStep(0); }, 4000);
+            return;
+        }
+
+        currentGuestName = guestName;
         document.getElementById('userNameDisplay').textContent = currentGuestName;
         document.body.style.cursor = 'wait';
         setTimeout(() => {
@@ -468,13 +505,14 @@
     function addTemplate(text) {
       const textarea = document.getElementById("commentInput");
       let currentText = textarea.value.trim();
+      
       if (currentText.length > 0 && !currentText.endsWith('.') && !currentText.endsWith('!')) {
           currentText += ". ";
       } else if (currentText.length > 0) {
           currentText += " ";
       }
+      
       textarea.value = currentText + text;
-      // Flash effect
       event.currentTarget.style.transform = "scale(0.95)";
       setTimeout(() => event.currentTarget.style.transform = "scale(1)", 150);
     }
