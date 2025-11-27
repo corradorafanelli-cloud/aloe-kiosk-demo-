@@ -16,6 +16,7 @@
       --aloe-text-light: #8C7B70;
       --aloe-border: #E8E0D5;
       --aloe-progress-inactive: #E0D6C8;
+      --aloe-error: #D9534F;
     }
 
     * {
@@ -133,7 +134,6 @@
       border-color: var(--aloe-accent);
       background: #F4F8ED;
     }
-    /* Generazione QR Code placeholder */
     .qr-image {
       width: 180px;
       height: 180px;
@@ -148,6 +148,12 @@
         font-weight: 600;
         margin-top: 15px;
         animation: pulse 2s infinite;
+    }
+    .validity-note {
+        font-size: 12px;
+        color: var(--aloe-text-light);
+        margin-top: 5px;
+        font-style: italic;
     }
     @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
 
@@ -239,9 +245,50 @@
     }
     .link:hover { opacity: 0.8; }
 
-    /* --- Success --- */
+    /* --- Success & Error Icons --- */
     .big-check { font-size: 72px; color: var(--aloe-accent); margin-bottom: 20px; display: block; }
+    .big-error { font-size: 72px; color: var(--aloe-error); margin-bottom: 20px; display: block; }
     .final-message { font-size: 14px; color: var(--aloe-text-light); margin-top: 30px; font-weight: 500; }
+
+    /* --- DEMO MODAL --- */
+    .modal-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        z-index: 100;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.3s;
+    }
+    .modal-overlay.visible {
+        opacity: 1; pointer-events: auto;
+    }
+    .modal-box {
+        background: white; border: 2px solid var(--aloe-border);
+        padding: 32px 24px; border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        width: 85%;
+        text-align: center;
+    }
+    .modal-box h2 {
+        font-size: 20px; color: var(--aloe-primary); margin-bottom: 12px;
+    }
+    .demo-badge {
+        background: #333; color: white; padding: 4px 10px; border-radius: 12px;
+        font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 16px; display: inline-block;
+    }
+    .modal-desc {
+        font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 24px;
+        background: #F5F5F5; padding: 12px; border-radius: 12px;
+    }
+    .modal-input {
+        width: 100%; padding: 14px; border-radius: 12px;
+        border: 2px solid var(--aloe-border);
+        margin-bottom: 20px; font-size: 16px; text-align: center;
+        font-family: inherit; font-weight: 600; color: var(--aloe-text-dark);
+    }
+    .modal-input:focus { border-color: var(--aloe-primary); outline: none; }
 
   </style>
 </head>
@@ -258,12 +305,32 @@
         </div>
     </div>
 
-    <div class="step active" id="step0" onclick="simulateScan()">
+    <div class="modal-overlay" id="simModal">
+        <div class="modal-box">
+            <span class="demo-badge">Demo Simulation</span>
+            <h2>Identify Guest</h2>
+            
+            <p class="modal-desc">
+                <strong>Note:</strong> In a real scenario, the QR Code automatically provides the 
+                Guest Name, Stay Duration, and Services (e.g. Spa) without typing. 
+                <br><br>
+                This manual entry is only to simulate the data retrieval.
+            </p>
+            
+            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi">
+            <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm Scan</button>
+        </div>
+    </div>
+
+    <div class="step active" id="step0" onclick="triggerScan()">
       <div class="qr-wrapper">
         <div class="qr-image"></div>
       </div>
       <h1>Welcome</h1>
-      <p class="subtitle">Please place your QR code near the scanner.</p>
+      <p class="subtitle" style="margin-bottom: 10px;">Please place your QR code near the scanner.</p>
+      
+      <div class="validity-note">⚠️ QR valid for 20 mins after check-out</div>
+      
       <p class="tap-hint">(Tap screen to simulate scan)</p>
     </div>
 
@@ -342,20 +409,31 @@
       </div>
     </div>
 
+    <div class="step" id="step6">
+      <div style="padding: 40px 0;">
+        <span class="big-error">⛔</span>
+        <h1 style="color: var(--aloe-error); font-size:22px;">Already Received</h1>
+        <p class="subtitle" id="errorMsgName">
+          Feedback for this room/stay has already been submitted.
+        </p>
+        <p class="final-message">Resetting...</p>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // Dati simulati
-    const simulatedQRData = {
-        name: "Guest Name", // Generico come richiesto
-    };
+    // MEMORIA DEI FEEDBACK INVIATI (Simulazione Database)
+    // Usiamo un Set per memorizzare i nomi che hanno già inviato
+    const submittedGuests = new Set();
 
+    let currentGuestName = "Guest";
     let feedbackData = { anonymous: true, rating: null, comment: "", tags: [] };
     let currentStep = 0; 
     const totalSteps = 5; 
 
     function updateProgressBar(stepNum) {
-        if (stepNum === 0) return;
+        if (stepNum === 0 || stepNum === 6) return;
         for (let i = 1; i <= totalSteps; i++) {
             const dot = document.getElementById('dot' + i);
             if (i === stepNum) {
@@ -379,17 +457,47 @@
 
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
       document.getElementById('step' + stepNum).classList.add('active');
-      if (stepNum > 0) updateProgressBar(stepNum);
+      if (stepNum > 0 && stepNum < 6) updateProgressBar(stepNum);
     }
 
-    // --- SIMULAZIONE SCAN ---
-    function simulateScan() {
+    // --- LOGICA SIMULAZIONE (Click su QR) ---
+    function triggerScan() {
+        // Apri il modal per inserire il nome (o confermare quello di default)
+        document.getElementById('simModal').classList.add('visible');
+        // Focus sull'input
+        setTimeout(() => document.getElementById('simGuestName').focus(), 100);
+    }
+
+    // --- CONFERMA NOME DAL MODAL ---
+    function confirmSimulation() {
+        const inputVal = document.getElementById('simGuestName').value.trim();
+        const guestName = inputVal || "Guest"; 
+        
+        // Chiudi modal
+        document.getElementById('simModal').classList.remove('visible');
+
+        // CONTROLLO DUPLICATI: Se questo nome ha già inviato, blocca!
+        if (submittedGuests.has(guestName.toLowerCase())) {
+            // Mostra errore personalizzato
+            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} has already been submitted.`;
+            goToStep(6); // Schermata Errore
+            
+            setTimeout(() => {
+                goToStep(0); // Torna alla home
+            }, 4000);
+            return;
+        }
+
+        // Se è un nuovo utente, procedi
+        currentGuestName = guestName;
+        document.getElementById('userNameDisplay').textContent = currentGuestName;
+        
+        // Simula caricamento breve e vai allo step 1
         document.body.style.cursor = 'wait';
         setTimeout(() => {
             document.body.style.cursor = 'default';
-            document.getElementById('userNameDisplay').textContent = simulatedQRData.name;
             goToStep(1);
-        }, 600);
+        }, 400);
     }
 
     // Step 1 Fn
@@ -407,13 +515,11 @@
       setTimeout(() => goToStep(3), 300);
     }
 
-    // Step 3 Fn - LOGICA CORRETTA PER I TEMPLATE
+    // Step 3 Fn
     function applyTemplate(el, text) {
       const textarea = document.getElementById("commentInput");
-      // Il testo inserito è ESATTAMENTE quello passato dalla funzione (uguale alla chip)
       textarea.value = text;
       feedbackData.comment = text;
-
       document.querySelectorAll(".chip").forEach(chip => {
         chip.classList.remove("selected");
       });
@@ -427,7 +533,7 @@
 
       document.getElementById('sumMode').textContent = feedbackData.anonymous 
         ? 'Anonymous' 
-        : `Named (${simulatedQRData.name})`;
+        : `Named (${currentGuestName})`;
       
       const ratings = {1: '😟 Not Good', 2: '😐 Okay', 3: '🙂 Great'};
       document.getElementById('sumRating').textContent = ratings[feedbackData.rating];
@@ -435,12 +541,14 @@
       goToStep(4);
     }
 
-    // Step 5 Fn & Reset
+    // Step 5 Fn & SAVE to Memory
     function submitFeedback() {
-      console.log("Sending data to ALOE API...", feedbackData);
+      // SALVA IL NOME NELLA "MEMORIA" DEL CHIOSCO
+      submittedGuests.add(currentGuestName.toLowerCase());
+      
+      console.log(`Feedback submitted for ${currentGuestName}`);
       goToStep(5);
       
-      // Conto alla rovescia e Reset
       let seconds = 5;
       const counterEl = document.getElementById('countdown');
       const interval = setInterval(() => {
@@ -448,9 +556,20 @@
           counterEl.textContent = seconds;
           if (seconds <= 0) {
               clearInterval(interval);
-              window.location.reload(); 
+              // Reset manuale (non reload, per mantenere la memoria submittedGuests in questa sessione browser)
+              resetKiosk(); 
           }
       }, 1000);
+    }
+
+    function resetKiosk() {
+        goToStep(0);
+        // Pulisci i campi
+        document.getElementById("commentInput").value = "";
+        document.querySelectorAll('.btn-emoji').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        document.getElementById('btnNextStep2').disabled = true;
+        // Non puliamo submittedGuests così la demo ricorda chi ha già votato!
     }
   </script>
 </body>
