@@ -1,274 +1,461 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiosk Hotel - Privacy Gate</title>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <meta charset="UTF-8" />
+  <title>ALOE Kiosk Feedback Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- ALOE ORGANIC BRAND PALETTE --- */
+    :root {
+      --aloe-primary: #8B5A2B;
+      --aloe-accent: #6B8E23;
+      --aloe-bg-warm: #F9F6F0;
+      --aloe-bg-container: #FFFFFF;
+      --aloe-text-dark: #3E2B1F;
+      --aloe-text-light: #8C7B70;
+      --aloe-border: #E8E0D5;
+      --aloe-progress-inactive: #E0D6C8;
+    }
 
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #222; /* Sfondo scuro per far risaltare il Kiosk */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .kiosk-wrapper {
-            background: white;
-            width: 100%;
-            max-width: 450px;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-            min-height: 600px;
-            display: flex;
-            flex-direction: column;
-        }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--aloe-bg-warm) 0%, #F3EDE2 100%);
+      color: var(--aloe-text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-        /* HEADER */
-        .header {
-            background-color: #004d40;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    /* --- Main App Container --- */
+    .app {
+      width: 100%;
+      max-width: 480px;
+      background: var(--aloe-bg-container);
+      border-radius: 30px;
+      box-shadow: 0 20px 40px -10px rgba(62, 43, 31, 0.15);
+      padding: 32px;
+      border: 1px solid #F0EAE2;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 600px; /* Altezza fissa per stabilità */
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Centra contenuto verticalmente */
+    }
+    .app::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(to right, var(--aloe-primary), var(--aloe-accent));
+    }
 
-        /* SCANNER AREA */
-        #scan-screen {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    /* --- HEADER & PROGRESS BAR --- */
+    .header-container {
+      position: absolute;
+      top: 30px;
+      left: 0;
+      right: 0;
+      transition: opacity 0.3s;
+    }
+    /* Nascondiamo l'header nella schermata di standby */
+    .hidden { opacity: 0; pointer-events: none; }
 
-        #reader {
-            width: 100%;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 4px solid #004d40;
-        }
+    .progress-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
 
-        /* SCHERMATA DI SCELTA (IL BIVIO) */
-        #choice-screen {
-            display: none; /* Nascosto all'inizio */
-            padding: 40px 20px;
-            text-align: center;
-            flex-grow: 1;
-            flex-direction: column;
-            justify-content: center;
-        }
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--aloe-progress-inactive);
+      transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
 
-        /* SCHERMATA FINALE (DASHBOARD) */
-        #dashboard-screen {
-            display: none; /* Nascosto all'inizio */
-            padding: 20px;
-            background-color: #f1f8e9;
-            flex-grow: 1;
-        }
+    .progress-dot.active {
+      background-color: var(--aloe-accent);
+      transform: scale(1.3);
+    }
+    .progress-dot.completed {
+        background-color: var(--aloe-accent);
+    }
 
-        /* BOTTONI E STILI */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+    /* --- Titles --- */
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: var(--aloe-text-dark);
+      line-height: 1.3;
+    }
 
-        .btn:active { transform: scale(0.98); }
+    p.subtitle {
+      margin: 0 auto 32px;
+      font-size: 16px;
+      color: var(--aloe-text-light);
+      line-height: 1.5;
+      max-width: 90%;
+    }
 
-        .btn-primary { background-color: #004d40; color: white; font-weight: bold; }
-        .btn-secondary { background-color: #e0e0e0; color: #333; }
-        .btn-ghost { background: transparent; border: 2px solid #004d40; color: #004d40; margin-top: 20px;}
+    /* --- Steps Animation --- */
+    .step { display: none; width: 100%; animation: fadeIn 0.5s ease; }
+    .step.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
 
-        .user-avatar {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
+    /* --- STEP 0: QR SCAN SCREEN --- */
+    .qr-container {
+      cursor: pointer; /* Indica che è cliccabile */
+      padding: 20px;
+      border: 2px dashed var(--aloe-border);
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 24px;
+      background: #FAFAFA;
+      transition: all 0.3s;
+    }
+    .qr-container:active {
+      transform: scale(0.95);
+      border-color: var(--aloe-accent);
+      background: #F4F8ED;
+    }
+    .qr-icon {
+      font-size: 80px;
+      display: block;
+      color: var(--aloe-text-dark);
+    }
+    .scan-hint {
+      font-size: 14px;
+      color: var(--aloe-accent);
+      font-weight: 600;
+      margin-top: 20px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
 
-        .info-card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+    /* --- Buttons --- */
+    .buttons-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
 
-        .tag {
-            display: inline-block;
-            padding: 4px 8px;
-            background-color: #b2dfdb;
-            color: #004d40;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-right: 5px;
-            font-weight: bold;
-        }
-    </style>
+    .btn {
+      padding: 16px 24px;
+      border-radius: 50px;
+      border: 2px solid var(--aloe-border);
+      background: var(--aloe-bg-container);
+      color: var(--aloe-text-dark);
+      font-size: 17px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-icon { font-size: 22px; }
+
+    .btn-primary {
+      background: var(--aloe-primary);
+      color: white; border: none;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.3);
+    }
+    .btn-primary:hover { background: #7A4E25; }
+    .btn-primary:disabled { background: #CDBBAE; box-shadow: none; cursor: not-allowed; }
+
+    /* --- Step 2: Big Emojis --- */
+    .emoji-row {
+      display: flex; justify-content: center; gap: 24px; margin: 40px 0;
+    }
+    .btn-emoji {
+      width: 85px; height: 85px; border-radius: 50%; font-size: 42px;
+      border: 3px solid var(--aloe-border); background: #FFFFFF; cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-emoji.selected {
+      border-color: var(--aloe-accent); background: #F4F8ED;
+      transform: scale(1.15); box-shadow: 0 8px 16px rgba(107, 142, 35, 0.2);
+    }
+
+    /* --- Step 3: Chips & Inputs --- */
+    .chips-container {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        justify-content: center; margin-bottom: 24px;
+    }
+    .chip {
+      padding: 12px 18px; border-radius: 30px;
+      border: 1px solid var(--aloe-border); background: #FAFAFA;
+      color: var(--aloe-text-dark); font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .chip.selected {
+      background: var(--aloe-primary); color: white;
+      border-color: var(--aloe-primary); box-shadow: 0 2px 8px rgba(139, 90, 43, 0.2);
+    }
+
+    textarea {
+      width: 100%; min-height: 100px; resize: none;
+      border-radius: 16px; border: 2px solid var(--aloe-border);
+      padding: 14px; font-size: 15px; font-family: inherit;
+      background: #FAFAFA; margin-bottom: 24px; color: var(--aloe-text-dark);
+    }
+    textarea:focus { outline: none; border-color: var(--aloe-primary); background: white; }
+
+    /* --- Summary Box --- */
+    .summary-box {
+      background: #F4F8ED; border-radius: 20px; padding: 20px;
+      text-align: left; margin-bottom: 24px;
+    }
+    .summary-item { margin-bottom: 8px; font-size: 15px; display: flex; }
+    .summary-label { font-weight: 600; color: var(--aloe-primary); width: 90px; }
+
+    /* --- Footer Links --- */
+    .footer {
+      margin-top: 24px; font-size: 15px; color: var(--aloe-text-light);
+      display: flex; justify-content: center; gap: 20px;
+    }
+    .link {
+      cursor: pointer; color: var(--aloe-primary); font-weight: 600;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .link:hover { opacity: 0.8; }
+
+    /* --- Success --- */
+    .big-check { font-size: 64px; color: var(--aloe-accent); margin-bottom: 16px; display: block; }
+    .final-message { font-size: 14px; color: var(--aloe-text-light); margin-top: 30px; font-weight: 500; }
+
+  </style>
 </head>
 <body>
 
-    <div class="kiosk-wrapper">
-        <div class="header">
-            <h2>Grand Hotel Kiosk</h2>
-        </div>
-
-        <div id="scan-screen">
-            <p>Inquadra il QR Code ricevuto all'ingresso</p>
-            <div id="reader"></div>
-        </div>
-
-        <div id="choice-screen">
-            <div class="user-avatar">👋</div>
-            <h3 id="choice-title">Utente Riconosciuto</h3>
-            <p>Come vuoi proseguire?</p>
-            
-            <button class="btn btn-primary" onclick="proceedIdentified()">
-                Continua come <span id="btn-name-label">...</span>
-            </button>
-            
-            <button class="btn btn-secondary" onclick="proceedAnonymous()">
-                Continua in Anonimo
-            </button>
-        </div>
-
-        <div id="dashboard-screen">
-            <h2 id="dash-greeting">Benvenuto</h2>
-            
-            <div id="personal-data-section">
-                <div class="info-card">
-                    <small>Stato Prenotazione</small>
-                    <div id="dash-reason" style="font-weight:bold; font-size:1.2rem;">...</div>
-                    <div style="margin-top:5px;">
-                        <span class="tag" id="dash-duration">...</span>
-                        <span class="tag" id="dash-room">...</span>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <small>Attività Incluse</small>
-                    <ul id="dash-activities" style="padding-left:20px; margin:5px 0;"></ul>
-                </div>
-            </div>
-
-            <div id="anonymous-message" style="display:none; text-align:center; padding:20px;">
-                <p>Navigazione ospite attiva.<br>Scansiona di nuovo per accedere ai tuoi servizi personalizzati.</p>
-            </div>
-
-            <button class="btn btn-ghost" onclick="resetKiosk()">Esci / Scansiona di nuovo</button>
+  <div class="app">
+    <div class="header-container hidden" id="mainHeader">
+        <div class="progress-bar">
+            <div class="progress-dot" id="dot1"></div>
+            <div class="progress-dot" id="dot2"></div>
+            <div class="progress-dot" id="dot3"></div>
+            <div class="progress-dot" id="dot4"></div>
+            <div class="progress-dot" id="dot5"></div>
         </div>
     </div>
 
-    <script>
-        // DATI SIMULATI (Quelli che l'operatore ha inserito nel sistema)
-        // Immagina che il QR contenga solo la chiave (es: GUEST-01)
-        const database = {
-            "GUEST-01": {
-                nome: "Mario",
-                cognome: "Rossi",
-                durata: "3 Notti",
-                motivo: "Viaggio di Lavoro",
-                stanza: "204",
-                attivita: ["Sala Meeting A", "Colazione Presto", "WiFi Alta Velocità"]
-            },
-            "GUEST-02": {
-                nome: "Elena",
-                cognome: "Bianchi",
-                durata: "7 Notti",
-                motivo: "Vacanza Relax",
-                stanza: "Suite Spa",
-                attivita: ["Accesso Spa Illimitato", "Tour della Città", "Massaggio ore 18:00"]
-            }
-        };
+    <div class="step active" id="step0" onclick="simulateScan()">
+      <div class="qr-container">
+        <span class="qr-icon">🏁</span> 
+        </div>
+      <h1>Welcome back!</h1>
+      <p class="subtitle">Please scan your checkout QR Code to leave a quick feedback.</p>
+      <p class="scan-hint">(Tap anywhere to simulate scan)</p>
+    </div>
 
-        let html5QrcodeScanner;
-        let currentUserData = null;
 
-        function onScanSuccess(decodedText, decodedResult) {
-            // 1. Cerco i dati nel database
-            const data = database[decodedText];
+    <div class="step" id="step1">
+      <h1>Share Your Feedback</h1>
+      <p class="subtitle">We found your stay! Choose how to share.</p>
 
-            if (data) {
-                // FERMO LA CAMERA
-                html5QrcodeScanner.clear();
-                
-                // SALVO I DATI IN MEMORIA TEMPORANEA
-                currentUserData = data;
+      <div class="buttons-stack">
+        <button class="btn" onclick="selectMode('anonymous')">
+          <span class="btn-icon">🕶️</span> Submit Anonymously
+        </button>
+        <button class="btn" onclick="selectMode('named')">
+          <span class="btn-icon">👤</span> Continue as <span id="userNameDisplay" style="margin-left:4px">Guest</span>
+        </button>
+      </div>
+    </div>
 
-                // 2. MOSTRO IL "BIVIO" (Choice Screen)
-                // Nascondo lo scanner
-                document.getElementById('scan-screen').style.display = 'none';
-                // Popolo il bottone con il nome reale
-                document.getElementById('btn-name-label').innerText = data.nome + " " + data.cognome;
-                // Mostro la scelta
-                document.getElementById('choice-screen').style.display = 'flex';
+    <div class="step" id="step2">
+      <h1>How was your stay?</h1>
+      <p class="subtitle">Tap an emoji to rate your experience.</p>
 
+      <div class="emoji-row">
+        <button class="btn-emoji" id="emoji1" onclick="selectRating(1)">😟</button>
+        <button class="btn-emoji" id="emoji2" onclick="selectRating(2)">😐</button>
+        <button class="btn-emoji" id="emoji3" onclick="selectRating(3)">🙂</button>
+      </div>
+
+      <button class="btn-primary btn" id="btnNextStep2" onclick="goToStep(3)" disabled style="width:100%">Next step</button>
+      <div class="footer">
+        <span class="link" onclick="goToStep(1)">Back</span>
+      </div>
+    </div>
+
+    <div class="step" id="step3">
+      <h1>Add a quick comment?</h1>
+      <p class="subtitle">Optional: Tap a tag or write a note.</p>
+
+      <div class="chips-container">
+        <div class="chip" onclick="applyTemplate(this, 'Perfect stay')">👌 Perfect stay</div>
+        <div class="chip" onclick="applyTemplate(this, 'Staff was kind')">🏨 Staff was kind</div>
+        <div class="chip" onclick="applyTemplate(this, 'Great breakfast')">🍳 Great breakfast</div>
+        <div class="chip" onclick="applyTemplate(this, 'I had an issue')">⚠️ I had an issue</div>
+      </div>
+      <textarea id="commentInput" placeholder="Add message here (optional)..."></textarea>
+
+      <button class="btn-primary btn" onclick="prepareSummary()" style="width:100%">Review Feedback</button>
+      <div class="footer">
+         <span class="link" onclick="prepareSummary()">Skip & Review</span>
+      </div>
+    </div>
+
+    <div class="step" id="step4">
+      <h1>Is this correct?</h1>
+      <p class="subtitle">Please review before sending.</p>
+
+      <div class="summary-box">
+        <div class="summary-item"><span class="summary-label">Privacy:</span><span id="sumMode"></span></div>
+        <div class="summary-item"><span class="summary-label">Rating:</span><span id="sumRating"></span></div>
+        <div class="summary-item"><span class="summary-label">Note:</span><span id="sumComment"></span></div>
+      </div>
+
+      <button class="btn-primary btn" onclick="submitFeedback()" style="width:100%">🚀 Send Feedback</button>
+      <div class="footer">
+        <span class="link" onclick="goToStep(3)">Edit details</span>
+      </div>
+    </div>
+
+    <div class="step" id="step5">
+      <div style="padding: 40px 0;">
+        <span class="big-check">✅</span>
+        <h1>Thank You!</h1>
+        <p class="subtitle">Your feedback helps us improve.</p>
+        <p class="final-message">Resetting in <span id="countdown">5</span> seconds...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Dati simulati (che arriverebbero dal QR code)
+    const simulatedQRData = {
+        name: "Mario Rossi",
+        stayId: "STAY_2023_MR",
+        service: "Spa Weekend"
+    };
+
+    let feedbackData = { anonymous: true, rating: null, comment: "", tags: [] };
+    let currentStep = 0; // Inizia dallo Step 0 (Scan)
+    const totalSteps = 5; // Step 1 to 5 for progress bar
+
+    function updateProgressBar(stepNum) {
+        if (stepNum === 0) return; // Niente progress bar allo step 0
+        for (let i = 1; i <= totalSteps; i++) {
+            const dot = document.getElementById('dot' + i);
+            if (i === stepNum) {
+                dot.classList.add('active'); dot.classList.remove('completed');
+            } else if (i < stepNum) {
+                dot.classList.add('completed'); dot.classList.remove('active');
             } else {
-                alert("QR Code non valido. Prova con GUEST-01 o GUEST-02");
+                dot.classList.remove('active', 'completed');
             }
         }
+    }
 
-        // SCELTA 1: UTENTE IDENTIFICATO
-        function proceedIdentified() {
-            document.getElementById('choice-screen').style.display = 'none';
-            document.getElementById('dashboard-screen').style.display = 'block';
+    function goToStep(stepNum) {
+      currentStep = stepNum;
+      
+      // Gestione visibilità Header
+      const header = document.getElementById('mainHeader');
+      if (stepNum > 0 && stepNum < 6) {
+          header.classList.remove('hidden');
+      } else {
+          header.classList.add('hidden');
+      }
 
-            // Mostro i dati personali
-            document.getElementById('dash-greeting').innerText = "Ciao, " + currentUserData.nome + "!";
-            document.getElementById('dash-reason').innerText = currentUserData.motivo; // Es: Lavoro, Spa, Tour
-            document.getElementById('dash-duration').innerText = currentUserData.durata;
-            document.getElementById('dash-room').innerText = "Stanza " + currentUserData.stanza;
-            
-            // Lista attività
-            const list = document.getElementById('dash-activities');
-            list.innerHTML = ""; // Pulisco
-            currentUserData.attivita.forEach(item => {
-                let li = document.createElement("li");
-                li.innerText = item;
-                list.appendChild(li);
-            });
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + stepNum).classList.add('active');
+      
+      if (stepNum > 0) updateProgressBar(stepNum);
+    }
 
-            // Assicuro che la sezione dati sia visibile
-            document.getElementById('personal-data-section').style.display = 'block';
-            document.getElementById('anonymous-message').style.display = 'none';
-        }
+    // --- FUNZIONE SIMULAZIONE SCAN (Step 0 -> Step 1) ---
+    function simulateScan() {
+        // Simuliamo un piccolo ritardo di lettura
+        document.body.style.cursor = 'wait';
+        setTimeout(() => {
+            document.body.style.cursor = 'default';
+            // Popoliamo il nome nel pulsante dello step 1
+            document.getElementById('userNameDisplay').textContent = simulatedQRData.name;
+            goToStep(1);
+        }, 600); // 600ms di ritardo simulato
+    }
 
-        // SCELTA 2: ANONIMO
-        function proceedAnonymous() {
-            document.getElementById('choice-screen').style.display = 'none';
-            document.getElementById('dashboard-screen').style.display = 'block';
+    // Step 1 Fn
+    function selectMode(mode) {
+      feedbackData.anonymous = (mode === 'anonymous');
+      goToStep(2);
+    }
 
-            // Nascondo i dati personali, mostro interfaccia generica
-            document.getElementById('dash-greeting').innerText = "Benvenuto Ospite";
-            document.getElementById('personal-data-section').style.display = 'none';
-            document.getElementById('anonymous-message').style.display = 'block';
-        }
+    // Step 2 Fn
+    function selectRating(val) {
+      feedbackData.rating = val;
+      document.querySelectorAll('.btn-emoji').forEach(b => b.classList.remove('selected'));
+      document.getElementById('emoji' + val).classList.add('selected');
+      document.getElementById('btnNextStep2').disabled = false;
+      setTimeout(() => goToStep(3), 300);
+    }
 
-        function resetKiosk() {
-            location.reload(); // Ricarica la pagina per ricominciare da zero
-        }
+    // Step 3 Fn
+    function applyTemplate(el, text) {
+      const textarea = document.getElementById("commentInput");
+      textarea.value = text;
+      feedbackData.comment = text;
+      document.querySelectorAll(".chip").forEach(chip => {
+        chip.classList.remove("selected");
+      });
+      el.classList.add("selected");
+    }
 
-        // AVVIO SCANNER
-        function startScanner() {
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", { fps: 10, qrbox: 250 }, false);
-            html5QrcodeScanner.render(onScanSuccess);
-        }
+    // Step 4 Fn
+    function prepareSummary() {
+      const text = document.getElementById('commentInput').value.trim();
+      feedbackData.comment = text;
 
-        // Parte subito
-        startScanner();
+      document.getElementById('sumMode').textContent = feedbackData.anonymous 
+        ? 'Anonymous' 
+        : `Named (${simulatedQRData.name})`; // Usa il nome simulato
+      
+      const ratings = {1: '😟 Not Good', 2: '😐 Okay', 3: '🙂 Great'};
+      document.getElementById('sumRating').textContent = ratings[feedbackData.rating];
+      document.getElementById('sumComment').textContent = feedbackData.comment || '(None)';
+      goToStep(4);
+    }
 
-    </script>
+    // Step 5 Fn & Reset Loop
+    function submitFeedback() {
+      console.log("Sending data...", { ...feedbackData, ...simulatedQRData });
+      goToStep(5);
+      
+      // Conto alla rovescia e Reset
+      let seconds = 5;
+      const counterEl = document.getElementById('countdown');
+      const interval = setInterval(() => {
+          seconds--;
+          counterEl.textContent = seconds;
+          if (seconds <= 0) {
+              clearInterval(interval);
+              window.location.reload(); // Ricarica la pagina per resettare tutto
+          }
+      }, 1000);
+    }
+  </script>
 </body>
 </html>
