@@ -5,217 +5,330 @@
   <title>ALOE Kiosk Feedback Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    /* --- ALOE Brand Colors & Theme --- */
+    :root {
+      --aloe-green-dark: #1a5c3f; /* Darker Green for primary buttons, accents */
+      --aloe-green-med: #4a8c6f;  /* Medium Green for borders, highlights */
+      --aloe-green-light: #e0f2e9; /* Light Green for backgrounds, selected states */
+      --aloe-beige: #f7f3e8;       /* Beige for main background */
+      --aloe-text-dark: #2d3e35;   /* Dark text color */
+      --aloe-text-light: #6b7c73;  /* Lighter text color for subtitles */
+    }
+
     * {
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: 'Montserrat', 'Segoe UI', sans-serif; /* More modern, clean font */
     }
 
     body {
       margin: 0;
-      background: #f5f7fa;
-      color: #1f2933;
+      background: var(--aloe-beige); /* Beige background */
+      color: var(--aloe-text-dark);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      /* Optional: Subtle leaf/organic pattern background like the slides */
+      background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 Q25,25 50,50 Q75,75 100,50" stroke="%23d0dec9" fill="none" opacity="0.3"/></svg>');
+      background-size: 200px 200px;
     }
 
+    /* --- Main App Container --- */
     .app {
       width: 100%;
-      max-width: 420px;
+      max-width: 460px; /* Slightly wider for better spacing */
       background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
-      padding: 24px 20px 28px;
+      border-radius: 24px; /* More rounded corners */
+      box-shadow: 0 15px 40px rgba(26, 92, 63, 0.15); /* Soft green shadow */
+      padding: 32px 28px 36px;
+      border: 1px solid var(--aloe-green-light); /* Subtle green border */
+      text-align: center; /* Default center text like kiosks */
     }
 
-    .step {
-      display: none;
-      animation: fadeIn 0.25s ease-out;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h1 {
-      font-size: 20px;
-      margin: 0 0 8px;
-    }
-
-    p.subtitle {
-      margin: 0 0 16px;
-      font-size: 14px;
-      color: #6b7280;
-    }
-
-    .buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 18px 0 8px;
-    }
-
-    .btn {
-      padding: 12px 14px;
-      border-radius: 999px;
-      border: 1px solid #d0d7e2;
-      background: #f9fafb;
-      font-size: 15px;
+    /* --- Header & Titles --- */
+    .header-logo {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      margin-bottom: 20px;
+      color: var(--aloe-green-dark);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .header-logo svg {
+        margin-right: 8px;
+        fill: var(--aloe-green-dark);
+        width: 24px; height: 24px;
+    }
+
+
+    h1 {
+      font-size: 24px; /* Larger title */
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: var(--aloe-green-dark); /* Dark green title */
+    }
+
+    p.subtitle {
+      margin: 0 0 24px;
+      font-size: 15px;
+      color: var(--aloe-text-light);
+      line-height: 1.5;
+    }
+
+    /* --- Steps & Animation --- */
+    .step {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .step.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Buttons --- */
+    .buttons-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 24px 0 16px;
+    }
+
+    .btn {
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 2px solid var(--aloe-green-med);
+      background: #ffffff;
+      color: var(--aloe-green-dark);
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       cursor: pointer;
-      transition: all 0.15s ease-out;
+      transition: all 0.2s ease-out;
+      box-shadow: 0 2px 4px rgba(26, 92, 63, 0.05);
     }
 
     .btn:hover {
-      background: #eef2ff;
-      border-color: #a5b4fc;
+      background: var(--aloe-green-light);
+      border-color: var(--aloe-green-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(26, 92, 63, 0.1);
     }
 
     .btn-primary {
-      background: #4f46e5;
+      background: var(--aloe-green-dark);
       color: white;
-      border-color: #4f46e5;
+      border-color: var(--aloe-green-dark);
     }
 
     .btn-primary:hover {
-      background: #4338ca;
-      border-color: #4338ca;
+      background: #144a32; /* Slightly darker on hover */
+      border-color: #144a32;
     }
 
-    .btn-outline {
-      background: white;
+    /* --- Step 2: Rating Emojis --- */
+    .emoji-row {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin: 30px 0 20px;
     }
 
     .btn-emoji {
-      flex: 1;
-      font-size: 26px;
-      padding: 12px 0;
-    }
-
-    .emoji-row {
+      flex: 0 0 auto; /* Don't stretch */
+      width: 70px; height: 70px; /* Square-ish */
+      border-radius: 50%; /* Circles */
+      font-size: 36px;
+      padding: 0;
       display: flex;
-      gap: 10px;
-      margin: 18px 0 8px;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #e0e0e0; /* Light gray default border */
+      background: #ffffff;
+      transition: all 0.2s ease-out;
     }
-
+    /* Specific Emoji Styles & Colors */
+    #emoji1:hover, #emoji1.selected {
+        border-color: #dc3545; /* Red for Sad */
+        background: #fde0e3;
+    }
+    #emoji2:hover, #emoji2.selected {
+        border-color: #ffc107; /* Yellow for Neutral */
+        background: #fff3cd;
+    }
+    #emoji3:hover, #emoji3.selected {
+        border-color: #28a745; /* Green for Happy */
+        background: #d4edda;
+    }
+    /* Add a subtle bounce on selection */
     .btn-emoji.selected {
-      background: #4f46e5;
-      border-color: #4f46e5;
-      color: #ffffff;
+        transform: scale(1.1);
     }
 
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 10px 0 14px;
+    /* --- Step 3: Comments --- */
+    .chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin: 16px 0 24px;
     }
 
     .chip {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #d0d7e2;
-      background: #f9fafb;
-      font-size: 13px;
+      padding: 10px 16px;
+      border-radius: 24px; /* Fully rounded chips */
+      border: 1px solid var(--aloe-green-med);
+      background: #ffffff;
+      color: var(--aloe-text-dark);
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s ease-out;
+      transition: all 0.2s ease-out;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip:hover {
+        background: var(--aloe-green-light);
     }
 
     .chip.selected {
-      background: #e0e7ff;
-      border-color: #818cf8;
+      background: var(--aloe-green-dark);
+      color: white;
+      border-color: var(--aloe-green-dark);
     }
 
     textarea {
       width: 100%;
-      min-height: 70px;
+      min-height: 80px;
       resize: none;
-      border-radius: 12px;
-      border: 1px solid #d0d7e2;
-      padding: 8px 10px;
+      border-radius: 14px;
+      border: 2px solid var(--aloe-green-med);
+      padding: 12px 14px;
       font-size: 14px;
+      font-family: inherit;
+      background: #f9fdfb; /* Slightly off-white */
+      margin-bottom: 20px;
     }
 
     textarea:focus {
       outline: none;
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 1px #4f46e5;
+      border-color: var(--aloe-green-dark);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(26, 92, 63, 0.2);
     }
 
+    /* --- Footer & Navigation --- */
     .footer {
-      margin-top: 20px;
+      margin-top: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 13px;
-      color: #9ca3af;
+      font-size: 14px;
+      color: var(--aloe-text-light);
+    }
+    .footer.centered {
+        justify-content: center;
     }
 
     .link {
       cursor: pointer;
-      color: #4f46e5;
-      text-decoration: underline;
-      font-size: 13px;
+      color: var(--aloe-green-med);
+      font-weight: 600;
+      text-decoration: none; /* Removed underline for cleaner look */
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .link:hover {
+        color: var(--aloe-green-dark);
     }
 
+    /* --- Step 4: Summary --- */
     .summary-box {
-      background: #f3f4ff;
-      border-radius: 12px;
-      padding: 12px 10px;
-      font-size: 13px;
-      margin: 14px 0;
+      background: var(--aloe-green-light);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 14px;
+      margin: 20px 0 24px;
+      text-align: left; /* Align summary text left */
+      border: 1px solid var(--aloe-green-med);
     }
 
     .summary-item {
-      margin-bottom: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+    }
+    .summary-item:last-child { margin-bottom: 0; }
+    .summary-label {
+        font-weight: 600;
+        color: var(--aloe-green-dark);
+        margin-right: 8px;
+        min-width: 70px;
+    }
+    .summary-value {
+        color: var(--aloe-text-dark);
+        flex: 1;
     }
 
-    .center {
-      text-align: center;
-    }
 
+    /* --- Step 5: Thank You --- */
     .big-emoji {
-      font-size: 42px;
-      margin-bottom: 8px;
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+    @keyframes popIn {
+        from { transform: scale(0.5); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    /* --- Icons --- */
+    .icon-privacy { font-size: 20px; }
+    .icon-btn { margin-right: 8px; }
+
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
   <div class="app">
-    <!-- STEP 1: Anonymous or Name -->
+    <div class="header-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        ALOE Feedback Kiosk
+    </div>
+
+
     <div class="step active" id="step1">
       <h1>How would you like to leave your feedback?</h1>
       <p class="subtitle">
-        You can stay anonymous or let us show your name with your review.
+        Choose your privacy level. You can stay anonymous or share your name.
       </p>
-      <div class="buttons">
+      <div class="buttons-stack">
         <button class="btn" onclick="selectMode('anonymous')">
-          🕶️ Leave it anonymously
+          <span class="icon-privacy">🕶️</span> Leave it anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          🙋 With my name (e.g. <span id="demoNameInline">Guest 123</span>)
+          <span class="icon-privacy">🙋</span> With my name (<span id="demoNameInline">Guest 123</span>)
         </button>
       </div>
-      <div class="footer">
-        <span></span>
-        <span class="link" onclick="goToStep(2)">Skip &amp; stay anonymous</span>
+      <div class="footer centered">
+        <span class="link" onclick="selectMode('anonymous')">Skip &amp; stay anonymous</span>
       </div>
     </div>
 
-    <!-- STEP 2: Rating with 3 emojis -->
     <div class="step" id="step2">
       <h1>How was your stay?</h1>
       <p class="subtitle">
-        Just tap once to rate your experience.
+        Tap an emoji to rate your overall experience.
       </p>
       <div class="emoji-row">
         <button class="btn btn-emoji" id="emoji1" onclick="selectRating(1)">😟</button>
@@ -224,74 +337,80 @@
       </div>
       <div class="footer">
         <span class="link" onclick="goToStep(1)">Back</span>
-        <button class="btn-primary btn" onclick="goToStep(3)">Next</button>
+        <button class="btn-primary btn" id="step2NextBtn" onclick="goToStep(3)" disabled style="opacity: 0.6; cursor: not-allowed;">Next</button>
       </div>
     </div>
 
-    <!-- STEP 3: Optional comment with templates -->
     <div class="step" id="step3">
-      <h1>Would you like to add a short comment?</h1>
+      <h1>Care to add a short comment?</h1>
       <p class="subtitle">
-        You can pick a quick phrase or write your own (optional).
+        Optional: Tap a quick phrase or write your own note.
       </p>
-      <div class="chips">
+      <div class="chips-container">
         <div class="chip" onclick="applyTemplate('Everything was perfect 👌')">
-          Everything was perfect 👌
+          <span>👌</span> Everything was perfect
         </div>
         <div class="chip" onclick="applyTemplate('Staff was kind, room could be improved')">
-          Staff was kind, room could be improved
+          <span>🏨</span> Staff kind, room needs improvement
         </div>
         <div class="chip" onclick="applyTemplate('I had an issue I want to report')">
-          I had an issue I want to report
+          <span>⚠️</span> I had an issue to report
         </div>
       </div>
       <textarea id="commentInput" placeholder="Write here if you want to add details…"></textarea>
       <div class="footer">
-        <span class="link" onclick="skipComment()">Skip</span>
+        <span class="link" onclick="skipComment()">Skip comment</span>
         <button class="btn-primary btn" onclick="prepareSummary()">Next</button>
       </div>
     </div>
-
-    <!-- STEP 4: Summary & send -->
+    
     <div class="step" id="step4">
       <h1>Confirm your feedback</h1>
       <p class="subtitle">
-        This is what we are about to send.
+        Please review before sending.
       </p>
       <div class="summary-box">
-        <div class="summary-item" id="summaryMode"></div>
-        <div class="summary-item" id="summaryRating"></div>
-        <div class="summary-item" id="summaryComment"></div>
+        <div class="summary-item">
+            <span class="summary-label">Mode:</span>
+            <span class="summary-value" id="summaryMode"></span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Rating:</span>
+            <span class="summary-value" id="summaryRating"></span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Comment:</span>
+            <span class="summary-value" id="summaryComment"></span>
+        </div>
       </div>
-      <div class="buttons">
-        <button class="btn" onclick="goToStep(3)">Edit comment</button>
-        <button class="btn-primary btn" onclick="submitFeedback()">Send feedback</button>
+      <div class="buttons-stack">
+        <button class="btn-primary btn" onclick="submitFeedback()">
+            <span>🚀</span> Send Feedback
+        </button>
+        <button class="btn" onclick="goToStep(3)">Edit Comment</button>
       </div>
-      <div class="footer">
-        <span class="link" onclick="goToStep(2)">Back</span>
-        <span></span>
+      <div class="footer centered">
+        <span class="link" onclick="goToStep(2)">Back to Rating</span>
       </div>
     </div>
 
-    <!-- STEP 5: Thank you -->
     <div class="step" id="step5">
-      <div class="center">
-        <div class="big-emoji">✨</div>
+        <span class="big-emoji">✨</span>
         <h1>Thank you for your feedback!</h1>
         <p class="subtitle">
-          Your feedback helps the hotel and ALOE improve future stays.
+          Your input helps the hotel and ALOE improve future stays.
         </p>
-      </div>
+        <p style="margin-top: 30px; font-size: 13px; color: var(--aloe-text-light);">Closing in 5 seconds...</p>
     </div>
   </div>
 
   <script>
     // 🔹 Qui simuliamo i dati che in produzione arriverebbero da RFID / QR + PMS/ALOE
     const feedbackData = {
-      stayId: "DEMO_STAY_123",       // in reale: lo manda ALOE dopo aver letto card/QR
-      hotelId: "DEMO_HOTEL_001",     // in reale: ID dell'hotel partner ALOE
+      stayId: "DEMO_STAY_123",
+      hotelId: "DEMO_HOTEL_001",
       anonymous: true,
-      name: "Guest 123",             // in reale: nome collegato al soggiorno (es. "Marco R.")
+      name: "Guest 123",
       rating: null,
       comment: "",
       channel: "KIOSK_DEMO",
@@ -307,11 +426,7 @@
 
     // STEP 1: scelta modalità
     function selectMode(mode) {
-      if (mode === "anonymous") {
-        feedbackData.anonymous = true;
-      } else {
-        feedbackData.anonymous = false;
-      }
+      feedbackData.anonymous = (mode === "anonymous");
       goToStep(2);
     }
 
@@ -322,6 +437,15 @@
         document.getElementById("emoji" + v).classList.remove("selected");
       });
       document.getElementById("emoji" + value).classList.add("selected");
+
+      // Enable the Next button once a rating is picked
+      const nextBtn = document.getElementById("step2NextBtn");
+      nextBtn.disabled = false;
+      nextBtn.style.opacity = 1;
+      nextBtn.style.cursor = "pointer";
+
+      // Optional: Auto-advance after a short delay for faster flow
+      // setTimeout(() => goToStep(3), 500);
     }
 
     // STEP 3: applica template al commento
@@ -346,24 +470,20 @@
       const textarea = document.getElementById("commentInput");
       feedbackData.comment = textarea.value.trim();
 
-      const modeText = feedbackData.anonymous
-        ? "Mode: Anonymous feedback"
-        : `Mode: With name – ${feedbackData.name}`;
+      document.getElementById("summaryMode").textContent = feedbackData.anonymous
+        ? "Anonymous feedback"
+        : `With name (${feedbackData.name})`;
 
       const ratingMap = {
-        1: "Rating: 😟 Not good",
-        2: "Rating: 😐 Okay",
-        3: "Rating: 🙂 Great"
+        1: "😟 Not good",
+        2: "😐 Okay",
+        3: "🙂 Great"
       };
-
-      document.getElementById("summaryMode").textContent = modeText;
-      document.getElementById("summaryRating").textContent =
-        ratingMap[feedbackData.rating] || "Rating: not selected";
+      document.getElementById("summaryRating").innerHTML =
+        ratingMap[feedbackData.rating] || "Not selected";
 
       document.getElementById("summaryComment").textContent =
-        feedbackData.comment
-          ? `Comment: "${feedbackData.comment}"`
-          : "Comment: (none)";
+        feedbackData.comment ? `"${feedbackData.comment}"` : "(None)";
 
       goToStep(4);
     }
@@ -371,20 +491,14 @@
     // STEP 4: invio feedback
     function submitFeedback() {
       feedbackData.timestamp = new Date().toISOString();
-
-      // 🔹 Per il prototipo: mostriamo in console.
       console.log("Feedback sent:", feedbackData);
-
-      // 🔹 In produzione qui chiameresti l'API di ALOE:
-      /*
-      fetch("https://api.aloe.com/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(feedbackData)
-      });
-      */
-
       goToStep(5);
+
+      // Optional: Reset flow after a few seconds
+      setTimeout(() => {
+        // Reset data & UI here if needed for a real kiosk loop
+        // window.location.reload();
+      }, 5000);
     }
   </script>
 </body>
