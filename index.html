@@ -6,14 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* --- ALOE ORGANIC BRAND PALETTE --- */
+    /* --- ALOE PREMIUM BRAND PALETTE --- */
     :root {
-      --aloe-primary: #8B5A2B;
-      --aloe-accent: #6B8E23;
-      --aloe-bg-warm: #F9F6F0;
+      --aloe-primary: #8B5A2B;    /* Marrone caldo elegante */
+      --aloe-accent: #6B8E23;     /* Verde oliva per azioni positive */
+      --aloe-bg-warm: #F9F6F0;    /* Beige crema sfondo */
       --aloe-bg-container: #FFFFFF;
-      --aloe-text-dark: #3E2B1F;
-      --aloe-text-light: #8C7B70;
+      --aloe-text-dark: #3E2B1F;  /* Testo scuro coffee */
+      --aloe-text-light: #8C7B70; /* Testo secondario */
       --aloe-border: #E8E0D5;
       --aloe-progress-inactive: #E0D6C8;
       --aloe-error: #D9534F;
@@ -29,17 +29,17 @@
       min-height: 100vh; padding: 20px;
     }
 
-    /* --- Main App Container --- */
+    /* --- APP CONTAINER --- */
     .app {
       width: 100%; max-width: 480px;
       background: var(--aloe-bg-container);
       border-radius: 30px;
-      box-shadow: 0 20px 40px -10px rgba(62, 43, 31, 0.15);
+      box-shadow: 0 20px 50px -10px rgba(62, 43, 31, 0.15);
       padding: 32px;
       border: 1px solid #F0EAE2;
       text-align: center;
       position: relative; overflow: hidden;
-      min-height: 700px; /* Aumentato leggermente per i contenuti */
+      min-height: 720px; /* Altezza fissa per stabilità demo */
       display: flex; flex-direction: column; justify-content: center;
     }
     .app::before {
@@ -47,7 +47,7 @@
         background: linear-gradient(to right, var(--aloe-primary), var(--aloe-accent));
     }
 
-    /* --- HEADER (Progress Bar Only) --- */
+    /* --- HEADER (Solo Progress Bar) --- */
     .header-container {
       position: absolute; top: 30px; left: 0; right: 0; transition: opacity 0.3s;
     }
@@ -62,11 +62,11 @@
     .progress-dot.active { background-color: var(--aloe-accent); transform: scale(1.3); }
     .progress-dot.completed { background-color: var(--aloe-accent); }
 
-    /* --- Typography --- */
+    /* --- TYPOGRAPHY --- */
     h1 { font-size: 24px; font-weight: 700; margin: 0 0 10px; color: var(--aloe-text-dark); line-height: 1.3; }
     p.subtitle { margin: 0 auto 24px; font-size: 15px; color: var(--aloe-text-light); line-height: 1.5; max-width: 90%; }
 
-    /* --- Animations --- */
+    /* --- ANIMATIONS --- */
     .step { display: none; width: 100%; animation: fadeIn 0.5s ease; }
     .step.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
@@ -81,18 +81,21 @@
     .qr-wrapper:active { transform: scale(0.96); border-color: var(--aloe-accent); background: #F4F8ED; }
     .qr-image {
       width: 180px; height: 180px; display: block;
-      background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ALOE-KIOSK-DEMO&color=3E2B1F');
+      /* Generatore QR reale per estetica */
+      background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ALOE-CHECKOUT-FEEDBACK&color=3E2B1F');
       background-size: contain; opacity: 0.9;
     }
     .tap-hint { font-size: 13px; color: var(--aloe-accent); font-weight: 600; margin-top: 15px; animation: pulse 2s infinite; }
+    
+    /* AVVISO VALIDITA' */
     .validity-note {
-        font-size: 13px; color: var(--aloe-text-dark); background: #FDE8E8;
-        padding: 8px 12px; border-radius: 8px; display: inline-block; margin-bottom: 20px;
-        border: 1px solid #F8B4B4;
+        font-size: 13px; color: #856404; background: #FFF3CD;
+        padding: 10px 16px; border-radius: 12px; display: inline-block; margin-bottom: 24px;
+        border: 1px solid #FFEEBA; font-weight: 500;
     }
     @keyframes pulse { 0% {opacity: 0.6;} 50% {opacity: 1;} 100% {opacity: 0.6;} }
 
-    /* --- Buttons --- */
+    /* --- BUTTONS --- */
     .buttons-stack { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
     .btn {
       padding: 18px 24px; border-radius: 50px; border: 2px solid var(--aloe-border);
@@ -109,7 +112,7 @@
     .btn-primary:hover { background: #7A4E25; }
     .btn-primary:disabled { background: #CDBBAE; box-shadow: none; cursor: not-allowed; }
 
-    /* --- Step 2: Emojis --- */
+    /* --- STEP 2: EMOJIS --- */
     .emoji-row { display: flex; justify-content: center; gap: 20px; margin: 30px 0; }
     .btn-emoji {
       width: 85px; height: 85px; border-radius: 50%; font-size: 42px;
@@ -122,7 +125,7 @@
       transform: scale(1.15); box-shadow: 0 8px 16px rgba(107, 142, 35, 0.2);
     }
 
-    /* --- Step 3: Chips --- */
+    /* --- STEP 3: CHIPS & TEXTAREA --- */
     .chips-container {
         display: flex; flex-wrap: wrap; gap: 8px;
         justify-content: center; margin-bottom: 20px;
@@ -134,8 +137,7 @@
       cursor: pointer; transition: all 0.2s; text-align: left;
     }
     .chip:hover { background: #F0F0F0; }
-    /* Animazione quando si clicca */
-    .chip:active { transform: scale(0.95); }
+    .chip:active { transform: scale(0.95); background: var(--aloe-bg-warm); }
 
     textarea {
       width: 100%; min-height: 100px; resize: none;
@@ -145,7 +147,12 @@
     }
     textarea:focus { outline: none; border-color: var(--aloe-primary); background: white; }
 
-    /* --- REVIEW CARD (Step 4) --- */
+    /* --- STEP 4: REVIEW CARD PREVIEW --- */
+    /* Questo stile simula esattamente il widget web di ALOE */
+    .preview-label {
+        font-size: 11px; text-transform: uppercase; color: var(--aloe-accent);
+        font-weight: 700; margin-bottom: 12px; display: block; letter-spacing: 1px;
+    }
     .review-card {
         background: #FFFFFF;
         border: 1px solid #E0E0E0;
@@ -153,42 +160,42 @@
         padding: 24px;
         text-align: left;
         margin-bottom: 24px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
         position: relative;
     }
+    /* Decorazione "Virgolette" */
+    .review-card::after {
+        content: '”'; position: absolute; top: 10px; right: 20px;
+        font-size: 60px; color: #F0F0F0; font-family: serif; z-index: 0;
+    }
     .review-header {
-        display: flex; align-items: center; margin-bottom: 12px;
+        display: flex; align-items: center; margin-bottom: 16px; position: relative; z-index: 1;
     }
     .review-avatar {
-        width: 40px; height: 40px; border-radius: 50%;
+        width: 44px; height: 44px; border-radius: 50%;
         background: var(--aloe-bg-warm);
         display: flex; align-items: center; justify-content: center;
-        font-size: 20px; margin-right: 12px;
+        font-size: 22px; margin-right: 12px;
         color: var(--aloe-primary); border: 1px solid var(--aloe-border);
     }
     .review-info h3 {
-        margin: 0; font-size: 16px; color: var(--aloe-text-dark);
+        margin: 0; font-size: 15px; font-weight: 600; color: var(--aloe-text-dark);
     }
     .review-info span {
-        font-size: 12px; color: var(--aloe-text-light);
+        font-size: 11px; color: var(--aloe-text-light); display: block; margin-top: 2px;
     }
     .review-stars {
-        color: #FFC107; font-size: 18px; margin-bottom: 8px;
+        color: #FFC107; font-size: 18px; margin-bottom: 12px; display: block;
     }
     .review-body {
-        font-size: 14px; line-height: 1.5; color: #555;
-        background: #FAFAFA; padding: 12px; border-radius: 8px;
-        font-style: italic;
-    }
-    .preview-label {
-        font-size: 11px; text-transform: uppercase; color: var(--aloe-accent);
-        font-weight: 700; margin-bottom: 8px; display: block; text-align: center;
+        font-size: 14px; line-height: 1.6; color: #444;
+        font-style: italic; position: relative; z-index: 1;
     }
 
-    /* --- Footer --- */
+    /* --- FOOTER --- */
     .footer {
-      margin-top: 24px; font-size: 15px; color: var(--aloe-text-light);
-      display: flex; justify-content: center; gap: 20px;
+      margin-top: 24px; font-size: 14px; color: var(--aloe-text-light);
+      display: flex; justify-content: center; gap: 24px;
     }
     .link {
       cursor: pointer; color: var(--aloe-primary); font-weight: 600;
@@ -196,7 +203,7 @@
     }
     .link:hover { opacity: 0.8; }
 
-    /* --- Success & Error --- */
+    /* --- SUCCESS & ERROR --- */
     .big-check { font-size: 72px; color: var(--aloe-accent); margin-bottom: 20px; display: block; }
     .big-error { font-size: 72px; color: var(--aloe-error); margin-bottom: 20px; display: block; }
     .final-message { font-size: 14px; color: var(--aloe-text-light); margin-top: 30px; font-weight: 500; }
@@ -318,7 +325,7 @@
       <h1>Preview Review</h1>
       <p class="subtitle">This is how it will appear on ALOE.</p>
 
-      <span class="preview-label">Website Preview</span>
+      <span class="preview-label">Website Widget Preview</span>
       
       <div class="review-card">
           <div class="review-header">
@@ -327,7 +334,7 @@
               </div>
               <div class="review-info">
                   <h3 id="cardName">Mario Rossi</h3>
-                  <span id="cardDate">Stayed in Oct 2023 • Relax Package</span>
+                  <span id="cardDate">Verified Stay • Kiosk</span>
               </div>
           </div>
           <div class="review-stars" id="cardStars">★★★★★</div>
@@ -435,12 +442,11 @@
       setTimeout(() => goToStep(3), 300);
     }
 
-    // NUOVA LOGICA AGGIUNTIVA PER I TEMPLATE
+    // LOGICA CUMULATIVA TEMPLATE
     function addTemplate(text) {
       const textarea = document.getElementById("commentInput");
       let currentText = textarea.value.trim();
       
-      // Aggiunge spazio se c'è già testo
       if (currentText.length > 0 && !currentText.endsWith('.') && !currentText.endsWith('!')) {
           currentText += ". ";
       } else if (currentText.length > 0) {
@@ -448,12 +454,11 @@
       }
       
       textarea.value = currentText + text;
-      // Feedback visivo (flash)
+      // Effetto click
       event.currentTarget.style.transform = "scale(0.95)";
       setTimeout(() => event.currentTarget.style.transform = "scale(1)", 150);
     }
 
-    // PREPARA LA CARD ANTEPRIMA (Step 4)
     function prepareSummary() {
       const text = document.getElementById('commentInput').value.trim();
       feedbackData.comment = text;
@@ -467,14 +472,14 @@
           document.getElementById('cardAvatarIcon').textContent = "👤";
       }
 
-      // 2. Data (Simulata)
+      // 2. Data
       const date = new Date();
-      const options = { month: 'short', year: 'numeric' };
-      document.getElementById('cardDate').textContent = `Stayed in ${date.toLocaleDateString('en-US', options)} • Verified Stay`;
+      const options = { month: 'short', day: 'numeric', year: 'numeric' };
+      document.getElementById('cardDate').textContent = `Stayed on ${date.toLocaleDateString('en-US', options)} • Verified by Kiosk`;
 
-      // 3. Stelle (da Emoji)
+      // 3. Stelle
       const starsMap = { 1: '★★☆☆☆', 2: '★★★☆☆', 3: '★★★★★' };
-      const starsColor = { 1: '#D9534F', 2: '#F0AD4E', 3: '#6B8E23' }; // Red, Orange, Green
+      const starsColor = { 1: '#D9534F', 2: '#F0AD4E', 3: '#6B8E23' }; 
       
       const starEl = document.getElementById('cardStars');
       starEl.textContent = starsMap[feedbackData.rating] || '☆☆☆☆☆';
