@@ -43,7 +43,7 @@
       border: 1px solid #F0EAE2;
       text-align: center;
       position: relative; overflow: hidden;
-      min-height: 750px; /* Altezza aumentata per gestire il contenuto */
+      min-height: 750px;
       display: flex; flex-direction: column; justify-content: center;
     }
     .app::before {
@@ -240,12 +240,15 @@
 
     .modal-input {
         width: 100%; padding: 14px; border-radius: 12px; border: 2px solid var(--aloe-border);
-        margin-bottom: 10px; font-size: 16px; text-align: center; font-weight: 600; color: var(--aloe-text-dark);
+        margin-bottom: 8px; font-size: 16px; text-align: center; font-weight: 600; color: var(--aloe-text-dark);
     }
     .modal-input:focus { border-color: var(--aloe-primary); outline: none; }
     
     .modal-hint {
-        font-size: 11px; color: #999; margin-bottom: 20px;
+        font-size: 11px; color: #888; margin-bottom: 20px; font-style: italic;
+    }
+    .sim-label {
+        text-align: left; font-size: 12px; font-weight: 600; color: var(--aloe-primary); margin-bottom: 4px; display: block;
     }
 
   </style>
@@ -272,15 +275,11 @@
             
             <!-- Dati simulati letti dal QR -->
             <div class="info-row">
-                <span class="info-label">Guest Name:</span>
-                <span class="info-val" id="modalGuestName">Mario Rossi</span>
+                <span class="info-label">Included Package:</span>
+                <span class="info-val">Chianti Wine Tour <small style="font-weight:400; color:#888;">(Optional)</small></span>
             </div>
             <div class="info-row">
-                <span class="info-label">Package:</span>
-                <span class="info-val">Chianti Wine Tour</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Stay:</span>
+                <span class="info-label">Stay Duration:</span>
                 <span class="info-val">3 Nights</span>
             </div>
 
@@ -289,15 +288,16 @@
                 ✅ Access granted. You can now leave your review.
             </div>
             <div class="access-subnote">
-                (Review will appear on ALOE only if the user booked an ALOE Package)
+                (Review will appear on ALOE only if the user booked an ALOE Package. General hotel reviews are internal.)
             </div>
             
             <!-- Input per la Demo -->
-            <div style="text-align:left; font-size: 12px; font-weight:600; color:var(--aloe-primary); margin-bottom:5px;">Demo Note:</div>
-            <div class="modal-hint" style="margin-bottom:10px;">
-                You can edit the name here to simulate different guests.
+            <label class="sim-label" for="simGuestName">Simulate Guest Name:</label>
+            <input type="text" class="modal-input" id="simGuestName" value="Mario Rossi">
+            <div class="modal-hint">
+                Demo Mode: Change name (e.g. "Mario 2") to simulate a different guest.<br>
+                Re-using the same name triggers the "Already Received" block.
             </div>
-            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi" style="margin-bottom: 10px;">
             
             <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm & Continue</button>
         </div>
@@ -456,14 +456,8 @@
     }
 
     function triggerScan() {
-        // Check if already submitted
-        if (submittedGuests.has(currentGuestName.toLowerCase())) {
-            goToStep(6); 
-            setTimeout(() => { goToStep(0); }, 4000);
-            return;
-        }
-        // Show Simulation Modal
         document.getElementById('simModal').classList.add('visible');
+        setTimeout(() => document.getElementById('simGuestName').focus(), 100);
     }
 
     function confirmSimulation() {
@@ -473,7 +467,7 @@
 
         // Controllo duplicati (Case insensitive)
         if (submittedGuests.has(guestName.toLowerCase())) {
-            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} (Chianti Wine Tour) has already been submitted.`;
+            document.getElementById('errorMsgName').textContent = `Feedback for ${guestName} has already been submitted.`;
             goToStep(6); 
             setTimeout(() => { goToStep(0); }, 4000);
             return;
