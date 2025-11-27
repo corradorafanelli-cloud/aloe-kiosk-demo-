@@ -133,12 +133,11 @@
       border-color: var(--aloe-accent);
       background: #F4F8ED;
     }
-    /* Generazione QR Code placeholder via CSS/Image */
+    /* Generazione QR Code placeholder */
     .qr-image {
       width: 180px;
       height: 180px;
       display: block;
-      /* Placeholder QR from a reliable public API */
       background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ALOE-KIOSK-DEMO&color=3E2B1F');
       background-size: contain;
       opacity: 0.9;
@@ -264,7 +263,7 @@
         <div class="qr-image"></div>
       </div>
       <h1>Welcome</h1>
-      <p class="subtitle">Please scan your QR code to begin.</p>
+      <p class="subtitle">Please place your QR code near the scanner.</p>
       <p class="tap-hint">(Tap screen to simulate scan)</p>
     </div>
 
@@ -438,7 +437,10 @@
 
     // Step 5 Fn & Reset
     function submitFeedback() {
+      console.log("Sending data to ALOE API...", feedbackData);
       goToStep(5);
+      
+      // Conto alla rovescia e Reset
       let seconds = 5;
       const counterEl = document.getElementById('countdown');
       const interval = setInterval(() => {
