@@ -2,487 +2,385 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hotel Feedback Kiosk – Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALOE Kiosk Feedback Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* --- ALOE ORGANIC BRAND PALETTE --- */
+    :root {
+      --aloe-primary: #8B5A2B;
+      --aloe-accent: #6B8E23;
+      --aloe-bg-warm: #F9F6F0;
+      --aloe-bg-container: #FFFFFF;
+      --aloe-text-dark: #3E2B1F;
+      --aloe-text-light: #8C7B70;
+      --aloe-border: #E8E0D5;
+      --aloe-progress-inactive: #E0D6C8; /* Color for inactive dots */
+    }
+
     * {
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       margin: 0;
-      background: radial-gradient(circle at top, #e5e7ff 0, #f5f7fa 40%, #f5f7fa 100%);
-      color: #0f172a;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--aloe-bg-warm) 0%, #F3EDE2 100%);
+      color: var(--aloe-text-dark);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 16px;
+      padding: 20px;
     }
 
+    /* --- Main App Container --- */
     .app {
       width: 100%;
-      max-width: 430px;
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
-      padding: 20px 20px 24px;
-      border: 1px solid #e5e7eb;
+      max-width: 480px;
+      background: var(--aloe-bg-container);
+      border-radius: 30px;
+      box-shadow: 0 20px 40px -10px rgba(62, 43, 31, 0.15);
+      padding: 32px;
+      border: 1px solid #F0EAE2;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .app::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(to right, var(--aloe-primary), var(--aloe-accent));
     }
 
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    /* --- HEADER & PROGRESS BAR --- */
+    .header-container {
+      margin-bottom: 32px;
     }
 
     .brand-title {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .brand-sub {
-      font-size: 11px;
+      color: var(--aloe-primary);
+      letter-spacing: 1.2px;
       text-transform: uppercase;
-      color: #9ca3af;
-      letter-spacing: 0.14em;
-    }
-
-    .pill {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #4338ca;
-      border: 1px solid #c7d2fe;
-      font-weight: 500;
-    }
-
-    .progress {
-      display: flex;
-      justify-content: flex-end;
-      gap: 4px;
-      margin-bottom: 6px;
-    }
-
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #e5e7eb;
-      transition: all 0.18s ease-out;
-    }
-
-    .dot.active {
-      width: 18px;
-      background: linear-gradient(90deg, #6366f1, #8b5cf6);
-    }
-
-    .step {
-      display: none;
-      animation: fadeIn 0.22s ease-out;
-    }
-
-    .step.active {
+      margin-bottom: 16px;
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .progress-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
     }
 
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--aloe-progress-inactive);
+      transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    .progress-dot.active {
+      background-color: var(--aloe-accent);
+      transform: scale(1.3); /* Make the active dot slightly bigger */
+    }
+    /* Optional: Make completed dots also accent color */
+    .progress-dot.completed {
+        background-color: var(--aloe-accent);
+    }
+
+
+    /* --- Titles --- */
     h1 {
-      font-size: 20px;
-      margin: 4px 0 8px;
-      line-height: 1.25;
+      font-size: 26px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: var(--aloe-text-dark);
+      line-height: 1.3;
     }
 
     p.subtitle {
-      margin: 0 0 16px;
-      font-size: 14px;
-      color: #6b7280;
+      margin: 0 auto 32px;
+      font-size: 16px;
+      color: var(--aloe-text-light);
+      line-height: 1.5;
+      max-width: 90%;
     }
 
-    .buttons {
+    /* --- Steps Animation --- */
+    .step { display: none; animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .step.active { display: block; }
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Buttons --- */
+    .buttons-stack {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin: 18px 0 4px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
     .btn {
-      padding: 11px 14px;
-      border-radius: 999px;
-      border: 1px solid #d0d7e2;
-      background: #f9fafb;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: all 0.15s ease-out;
+      padding: 16px 24px;
+      border-radius: 50px;
+      border: 2px solid var(--aloe-border);
+      background: var(--aloe-bg-container);
+      color: var(--aloe-text-dark);
+      font-size: 17px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      cursor: pointer; transition: all 0.2s;
     }
-
-    .btn:hover {
-      background: #eef2ff;
-      border-color: #a5b4fc;
-    }
+    .btn:active { transform: scale(0.98); }
+    .btn-icon { font-size: 22px; }
 
     .btn-primary {
-      background: linear-gradient(90deg, #4f46e5, #7c3aed);
-      color: #ffffff;
-      border-color: #4f46e5;
-      box-shadow: 0 10px 18px rgba(79, 70, 229, 0.28);
+      background: var(--aloe-primary);
+      color: white; border: none;
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.3);
     }
+    .btn-primary:hover { background: #7A4E25; }
+    .btn-primary:disabled { background: #CDBBAE; box-shadow: none; cursor: not-allowed; }
 
-    .btn-primary:hover {
-      filter: brightness(0.97);
-    }
-
-    .btn-outline {
-      background: #ffffff;
-    }
-
-    .btn-emoji {
-      flex: 1;
-      font-size: 26px;
-      padding: 12px 0;
-    }
-
+    /* --- Step 2: Big Emojis --- */
     .emoji-row {
-      display: flex;
-      gap: 10px;
-      margin: 18px 0 8px;
+      display: flex; justify-content: center; gap: 24px; margin: 40px 0;
     }
-
+    .btn-emoji {
+      width: 85px; height: 85px; border-radius: 50%; font-size: 42px;
+      border: 3px solid var(--aloe-border); background: #FFFFFF; cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; align-items: center; justify-content: center;
+    }
     .btn-emoji.selected {
-      background: #4f46e5;
-      border-color: #4f46e5;
-      color: #ffffff;
+      border-color: var(--aloe-accent); background: #F4F8ED;
+      transform: scale(1.15); box-shadow: 0 8px 16px rgba(107, 142, 35, 0.2);
     }
 
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 10px 0 14px;
+    /* --- Step 3: Chips & Inputs --- */
+    .chips-container {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        justify-content: center; margin-bottom: 24px;
     }
-
     .chip {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #d0d7e2;
-      background: #f9fafb;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.15s ease-out;
+      padding: 12px 18px; border-radius: 30px;
+      border: 1px solid var(--aloe-border); background: #FAFAFA;
+      color: var(--aloe-text-dark); font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
     }
-
     .chip.selected {
-      background: #e0e7ff;
-      border-color: #818cf8;
+      background: var(--aloe-primary); color: white;
+      border-color: var(--aloe-primary); box-shadow: 0 2px 8px rgba(139, 90, 43, 0.2);
     }
 
     textarea {
-      width: 100%;
-      min-height: 72px;
-      resize: none;
-      border-radius: 12px;
-      border: 1px solid #d0d7e2;
-      padding: 8px 10px;
-      font-size: 14px;
+      width: 100%; min-height: 100px; resize: none;
+      border-radius: 16px; border: 2px solid var(--aloe-border);
+      padding: 14px; font-size: 15px; font-family: inherit;
+      background: #FAFAFA; margin-bottom: 24px; color: var(--aloe-text-dark);
     }
+    textarea:focus { outline: none; border-color: var(--aloe-primary); background: white; }
 
-    textarea:focus {
-      outline: none;
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 1px #4f46e5;
-    }
-
-    .footer {
-      margin-top: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      color: #9ca3af;
-    }
-
-    .link {
-      cursor: pointer;
-      color: #4f46e5;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .link:hover {
-      text-decoration: underline;
-    }
-
+    /* --- Summary Box --- */
     .summary-box {
-      background: #f3f4ff;
-      border-radius: 12px;
-      padding: 12px 11px;
-      font-size: 13px;
-      margin: 14px 0;
-      border: 1px solid #c7d2fe;
+      background: #F4F8ED; border-radius: 20px; padding: 20px;
+      text-align: left; margin-bottom: 24px;
     }
+    .summary-item { margin-bottom: 8px; font-size: 15px; display: flex; }
+    .summary-label { font-weight: 600; color: var(--aloe-primary); width: 90px; }
 
-    .summary-item {
-      margin-bottom: 6px;
+    /* --- Footer Links --- */
+    .footer {
+      margin-top: 24px; font-size: 15px; color: var(--aloe-text-light);
+      display: flex; justify-content: center; gap: 20px;
     }
+    .link {
+      cursor: pointer; color: var(--aloe-primary); font-weight: 600;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .link:hover { opacity: 0.8; }
 
-    .center {
-      text-align: center;
-      padding: 8px 0 4px;
-    }
+    /* --- Success --- */
+    .big-check { font-size: 64px; color: var(--aloe-accent); margin-bottom: 16px; display: block; }
+    .final-message { font-size: 14px; color: var(--aloe-text-light); margin-top: 30px; }
 
-    .big-emoji {
-      font-size: 42px;
-      margin-bottom: 8px;
-    }
-
-    .muted {
-      font-size: 12px;
-      color: #9ca3af;
-      text-align: center;
-      margin-top: 6px;
-    }
   </style>
 </head>
 <body>
+
   <div class="app">
-    <div class="app-header">
-      <div class="brand">
-        <span class="brand-title">Hotel Feedback</span>
-        <span class="brand-sub">POST-STAY KIOSK</span>
-      </div>
-      <span class="pill">Step flow</span>
+    <div class="header-container">
+        <span class="brand-title">🌿 Hotel Feedback Kiosk</span>
+        <div class="progress-bar">
+            <div class="progress-dot active" id="dot1"></div>
+            <div class="progress-dot" id="dot2"></div>
+            <div class="progress-dot" id="dot3"></div>
+            <div class="progress-dot" id="dot4"></div>
+            <div class="progress-dot" id="dot5"></div>
+        </div>
     </div>
 
-    <div class="progress">
-      <div class="dot active" id="dot1"></div>
-      <div class="dot" id="dot2"></div>
-      <div class="dot" id="dot3"></div>
-      <div class="dot" id="dot4"></div>
-      <div class="dot" id="dot5"></div>
-    </div>
 
-    <!-- STEP 1: Anonymous or Name -->
     <div class="step active" id="step1">
-      <h1>How would you like to leave your feedback?</h1>
-      <p class="subtitle">
-        You can stay anonymous or allow us to show your name together with your review.
-      </p>
-      <div class="buttons">
+      <h1>How do you want to share?</h1>
+      <p class="subtitle">Choose your privacy level below.</p>
+
+      <div class="buttons-stack">
         <button class="btn" onclick="selectMode('anonymous')">
-          🕶️ Leave it anonymously
+          <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          🙋 With my name (e.g. <span id="demoNameInline">Guest 123</span>)
+          <span class="btn-icon">👤</span> Submit with Name
         </button>
       </div>
-      <div class="footer">
-        <span></span>
-        <span class="link" onclick="goToStep(2)">Skip &amp; stay anonymous</span>
-      </div>
     </div>
 
-    <!-- STEP 2: Rating with 3 emojis -->
     <div class="step" id="step2">
-      <h1>How was your stay overall?</h1>
-      <p class="subtitle">
-        Just tap once to rate your experience.
-      </p>
+      <h1>How was your stay?</h1>
+      <p class="subtitle">Tap an emoji to rate your experience.</p>
+
       <div class="emoji-row">
-        <button class="btn btn-emoji" id="emoji1" onclick="selectRating(1)">😟</button>
-        <button class="btn btn-emoji" id="emoji2" onclick="selectRating(2)">😐</button>
-        <button class="btn btn-emoji" id="emoji3" onclick="selectRating(3)">🙂</button>
+        <button class="btn-emoji" id="emoji1" onclick="selectRating(1)">😟</button>
+        <button class="btn-emoji" id="emoji2" onclick="selectRating(2)">😐</button>
+        <button class="btn-emoji" id="emoji3" onclick="selectRating(3)">🙂</button>
       </div>
+
+      <button class="btn-primary btn" id="btnNextStep2" onclick="goToStep(3)" disabled style="width:100%">Next step</button>
       <div class="footer">
         <span class="link" onclick="goToStep(1)">Back</span>
-        <button class="btn-primary btn" onclick="goToStep(3)">Next</button>
       </div>
     </div>
 
-    <!-- STEP 3: Optional comment with templates -->
     <div class="step" id="step3">
-      <h1>Would you like to add a short comment?</h1>
-      <p class="subtitle">
-        You can pick a quick phrase or write your own (optional).
-      </p>
-      <div class="chips">
-        <div class="chip" onclick="applyTemplate(this, 'Everything was perfect 👌')">
-          Everything was perfect 👌
-        </div>
-        <div class="chip" onclick="applyTemplate(this, 'Staff was kind, room could be improved')">
-          Staff was kind, room could be improved
-        </div>
-        <div class="chip" onclick="applyTemplate(this, 'I had an issue I want to report')">
-          I had an issue I want to report
-        </div>
+      <h1>Add a quick comment?</h1>
+      <p class="subtitle">Optional: Tap a tag or write a note.</p>
+
+      <div class="chips-container">
+        <div class="chip" onclick="toggleChip(this)">👌 Perfect stay</div>
+        <div class="chip" onclick="toggleChip(this)">🏨 Staff was kind</div>
+        <div class="chip" onclick="toggleChip(this)">🍳 Great breakfast</div>
+        <div class="chip" onclick="toggleChip(this)">⚠️ I had an issue</div>
       </div>
-      <textarea id="commentInput" placeholder="Write here if you want to add details…"></textarea>
+      <textarea id="commentInput" placeholder="Type your message here (optional)..."></textarea>
+
+      <button class="btn-primary btn" onclick="prepareSummary()" style="width:100%">Review Feedback</button>
       <div class="footer">
-        <span class="link" onclick="skipComment()">Skip</span>
-        <button class="btn-primary btn" onclick="prepareSummary()">Next</button>
+         <span class="link" onclick="prepareSummary()">Skip & Review</span>
       </div>
     </div>
 
-    <!-- STEP 4: Summary & send -->
     <div class="step" id="step4">
-      <h1>Confirm your feedback</h1>
-      <p class="subtitle">
-        This is what we are about to send.
-      </p>
+      <h1>Is this correct?</h1>
+      <p class="subtitle">Please review before sending.</p>
+
       <div class="summary-box">
-        <div class="summary-item" id="summaryMode"></div>
-        <div class="summary-item" id="summaryRating"></div>
-        <div class="summary-item" id="summaryComment"></div>
+        <div class="summary-item"><span class="summary-label">Privacy:</span><span id="sumMode"></span></div>
+        <div class="summary-item"><span class="summary-label">Rating:</span><span id="sumRating"></span></div>
+        <div class="summary-item"><span class="summary-label">Note:</span><span id="sumComment"></span></div>
       </div>
-      <div class="buttons">
-        <button class="btn" onclick="goToStep(3)">Edit comment</button>
-        <button class="btn-primary btn" onclick="submitFeedback()">Send feedback</button>
-      </div>
+
+      <button class="btn-primary btn" onclick="submitFeedback()" style="width:100%">🚀 Send Feedback</button>
       <div class="footer">
-        <span class="link" onclick="goToStep(2)">Back</span>
-        <span></span>
+        <span class="link" onclick="goToStep(3)">Edit details</span>
       </div>
     </div>
 
-    <!-- STEP 5: Thank you -->
     <div class="step" id="step5">
-      <div class="center">
-        <div class="big-emoji">✨</div>
-        <h1>Thank you for your feedback!</h1>
-        <p class="subtitle">
-          Your feedback helps us improve future stays.
-        </p>
+      <div style="padding: 40px 0;">
+        <span class="big-check">✅</span>
+        <h1>Thank You!</h1>
+        <p class="subtitle">Your feedback helps us improve.</p>
+        <p class="final-message">Closing in a few seconds...</p>
       </div>
-      <p class="muted">You can now hand the room key back to the reception.</p>
     </div>
+
   </div>
 
   <script>
-    const TOTAL_STEPS = 5;
+    // Dati simulati
+    let feedbackData = { anonymous: true, rating: null, comment: "", tags: [] };
+    let currentStep = 1;
+    const totalSteps = 5;
 
-    // 🔹 Simuliamo i dati che in produzione arriverebbero da RFID / QR + PMS
-    const feedbackData = {
-      stayId: "DEMO_STAY_123",
-      hotelId: "DEMO_HOTEL_001",
-      anonymous: true,
-      name: "Guest 123",
-      rating: null,
-      comment: "",
-      channel: "KIOSK_DEMO",
-      timestamp: null
-    };
-
-    function updateProgress(stepNumber) {
-      for (let i = 1; i <= TOTAL_STEPS; i++) {
-        const dot = document.getElementById("dot" + i);
-        if (!dot) continue;
-        dot.classList.toggle("active", i === stepNumber);
-      }
+    // Function to update the progress bar dots
+    function updateProgressBar(stepNum) {
+        for (let i = 1; i <= totalSteps; i++) {
+            const dot = document.getElementById('dot' + i);
+            if (i === stepNum) {
+                dot.classList.add('active');
+                dot.classList.remove('completed');
+            } else if (i < stepNum) {
+                dot.classList.add('completed');
+                dot.classList.remove('active');
+            } else {
+                dot.classList.remove('active', 'completed');
+            }
+        }
     }
 
-    function goToStep(stepNumber) {
-      document.querySelectorAll(".step").forEach(step => {
-        step.classList.remove("active");
-      });
-      document.getElementById("step" + stepNumber).classList.add("active");
-      updateProgress(stepNumber);
+    function goToStep(stepNum) {
+      currentStep = stepNum;
+      // Hide all steps
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      // Show current step
+      document.getElementById('step' + stepNum).classList.add('active');
+      // Update progress bar
+      updateProgressBar(stepNum);
     }
 
-    // STEP 1: scelta modalità
+    // Step 1 Fn
     function selectMode(mode) {
-      feedbackData.anonymous = mode === "anonymous";
+      feedbackData.anonymous = (mode === 'anonymous');
       goToStep(2);
     }
 
-    // STEP 2: selezione rating
-    function selectRating(value) {
-      feedbackData.rating = value;
-      [1, 2, 3].forEach(v => {
-        document.getElementById("emoji" + v).classList.remove("selected");
-      });
-      document.getElementById("emoji" + value).classList.add("selected");
+    // Step 2 Fn
+    function selectRating(val) {
+      feedbackData.rating = val;
+      document.querySelectorAll('.btn-emoji').forEach(b => b.classList.remove('selected'));
+      document.getElementById('emoji' + val).classList.add('selected');
+      document.getElementById('btnNextStep2').disabled = false;
+      setTimeout(() => goToStep(3), 300); // Auto-advance
     }
 
-    // STEP 3: applica template al commento
-    function applyTemplate(el, text) {
-      const textarea = document.getElementById("commentInput");
-      textarea.value = text;
-      feedbackData.comment = text;
-
-      document.querySelectorAll(".chip").forEach(chip => {
-        chip.classList.remove("selected");
-      });
-      el.classList.add("selected");
+    // Step 3 Fn
+    function toggleChip(chip) {
+        chip.classList.toggle('selected');
     }
 
-    function skipComment() {
-      document.getElementById("commentInput").value = "";
-      feedbackData.comment = "";
-      prepareSummary();
-    }
-
-    // STEP 4: prepara riepilogo
+    // Step 4 Fn
     function prepareSummary() {
-      const textarea = document.getElementById("commentInput");
-      feedbackData.comment = textarea.value.trim();
+      const text = document.getElementById('commentInput').value.trim();
+      const selectedTags = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.textContent);
+      feedbackData.comment = selectedTags.join(", ") + (text ? (selectedTags.length ? "; " : "") + text : "");
 
-      const modeText = feedbackData.anonymous
-        ? "Mode: Anonymous feedback"
-        : `Mode: With name – ${feedbackData.name}`;
-
-      const ratingMap = {
-        1: "Rating: 😟 Not good",
-        2: "Rating: 😐 Okay",
-        3: "Rating: 🙂 Great"
-      };
-
-      document.getElementById("summaryMode").textContent = modeText;
-      document.getElementById("summaryRating").textContent =
-        ratingMap[feedbackData.rating] || "Rating: not selected";
-
-      document.getElementById("summaryComment").textContent =
-        feedbackData.comment
-          ? `Comment: "${feedbackData.comment}"`
-          : "Comment: (none)";
-
+      document.getElementById('sumMode').textContent = feedbackData.anonymous ? 'Anonymous' : 'Named Guest';
+      const ratings = {1: '😟 Not Good', 2: '😐 Okay', 3: '🙂 Great'};
+      document.getElementById('sumRating').textContent = ratings[feedbackData.rating];
+      document.getElementById('sumComment').textContent = feedbackData.comment || '(None)';
       goToStep(4);
     }
 
-    // STEP 4: invio feedback
+    // Step 5 Fn
     function submitFeedback() {
-      feedbackData.timestamp = new Date().toISOString();
-
-      // Per il prototipo: mostriamo in console.
-      console.log("Feedback sent:", feedbackData);
-
-      // In produzione qui chiameresti l'API del PMS / ALOE:
-      /*
-      fetch("https://api.aloe.com/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(feedbackData)
-      });
-      */
-
+      console.log("Sending data to ALOE API...", feedbackData);
       goToStep(5);
+      // Simulate kiosk reset after 5 seconds
+      setTimeout(() => {
+        // Reset app state for next user (in a real app, you'd reset variables too)
+        window.location.reload();
+      }, 5000);
     }
+
+    // Initialize progress bar on load
+    updateProgressBar(currentStep);
   </script>
 </body>
 </html>
