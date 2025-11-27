@@ -58,11 +58,8 @@
 
     /* --- HEADER & PROGRESS BAR --- */
     .header-container {
-      /* Rimossa la scritta del brand, aumentato il margine inferiore per spaziatura */
       margin-bottom: 40px;
     }
-
-    /* Stile rimosso per .brand-title */
 
     .progress-bar {
       display: flex;
@@ -254,12 +251,12 @@
       <p class="subtitle">Optional: Tap a tag or write a note.</p>
 
       <div class="chips-container">
-        <div class="chip" onclick="applyTemplate(this, 'Everything was perfect 👌')">👌 Perfect stay</div>
-        <div class="chip" onclick="applyTemplate(this, 'Staff was kind, room could be improved')">🏨 Staff was kind</div>
-        <div class="chip" onclick="applyTemplate(this, 'Great breakfast choices')">🍳 Great breakfast</div>
-        <div class="chip" onclick="applyTemplate(this, 'I had an issue I want to report')">⚠️ I had an issue</div>
+        <div class="chip" onclick="applyTemplate(this, 'Perfect stay')">👌 Perfect stay</div>
+        <div class="chip" onclick="applyTemplate(this, 'Staff was kind')">🏨 Staff was kind</div>
+        <div class="chip" onclick="applyTemplate(this, 'Great breakfast')">🍳 Great breakfast</div>
+        <div class="chip" onclick="applyTemplate(this, 'I had an issue')">⚠️ I had an issue</div>
       </div>
-      <textarea id="commentInput" placeholder="Type your message here (optional)..."></textarea>
+      <textarea id="commentInput" placeholder="Add message here (optional)..."></textarea>
 
       <button class="btn-primary btn" onclick="prepareSummary()" style="width:100%">Review Feedback</button>
       <div class="footer">
@@ -336,13 +333,11 @@
 
     // Step 3 Fn - FUNZIONE CHIP TEMPLATE
     function applyTemplate(el, text) {
-      // Trova la textarea
       const textarea = document.getElementById("commentInput");
-      // Inserisce il testo del template nella textarea
+      // Inserisce esattamente il testo passato (che ora corrisponde alla chip)
       textarea.value = text;
       feedbackData.comment = text;
 
-      // Gestione visuale della selezione
       document.querySelectorAll(".chip").forEach(chip => {
         chip.classList.remove("selected");
       });
