@@ -275,7 +275,7 @@
             <!-- Dati simulati letti dal QR -->
             <div class="info-row">
                 <span class="info-label">Hotel name:</span>
-                <span class="info-val" id="modalHotelName">ALOE Demo Hotel</span>
+                <span class="info-val" id="modalHotelName"> Demo Hotel</span>
             </div>
             <div class="info-row">
                 <span class="info-label">Included Package:</span>
@@ -298,13 +298,21 @@
             
             <!-- Input per la Demo -->
             <label class="sim-label" for="simGuestName">Simulate Guest Name:</label>
-            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi 1">
+            <input
+              type="text"
+              class="modal-input"
+              id="simGuestName"
+              placeholder="Type guest name here..."
+            >
             <div class="modal-hint">
-                Demo Note: Change name (e.g. "Mario Rossi 2") to simulate a different guest.<br>
-                Re-using the exact same name triggers the "Already Received" block.
+              Demo Note: typing the guest name here is only for simulation purposes.<br>
+              In a real case the guest name would already be encoded inside the QR code.<br>
+              Re-using the exact same name triggers the "Already Received" block. 
             </div>
             
-            <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm & Continue</button>
+            <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">
+              Confirm & Continue
+            </button>
         </div>
     </div>
 
@@ -429,7 +437,7 @@
   <script>
     /* ---------------------------------------------
        Simulated QR data:
-       in real life these come from the QR code.
+       in real Case these come from the QR code.
     ----------------------------------------------*/
     const HOTEL_NAME = "ALOE Demo Hotel";
     const EXPERIENCE_LABEL = "Chianti Wine Tour";
@@ -589,9 +597,9 @@
       // JSON che andrebbe ad ALOE
       const payload = {
         hotel_name: HOTEL_NAME,
-        experience_label: EXPERIENCE_LABEL,       // es. "Chianti Wine Tour"
+        experience_label: EXPERIENCE_LABEL,
         guest_name: feedbackData.anonymous ? null : cleanGuestName,
-        rating: feedbackData.rating,             // 1, 2, 3
+        rating: feedbackData.rating,
         comment: feedbackData.comment || null,
         submitted_at: new Date().toISOString()
       };
