@@ -293,10 +293,10 @@
             
             <!-- Input per la Demo -->
             <label class="sim-label" for="simGuestName">Simulate Guest Name:</label>
-            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi">
+            <input type="text" class="modal-input" id="simGuestName" placeholder="Enter Guest Name" value="Mario Rossi 1">
             <div class="modal-hint">
-                Demo Note: Change name (e.g. "Mario 2") to simulate a different guest.<br>
-                Same name triggers "Already Received".
+                Demo Note: Change name (e.g. "Mario Rossi 2") to simulate a different guest.<br>
+                Re-using the exact same name triggers the "Already Received" block.
             </div>
             
             <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">Confirm & Continue</button>
@@ -305,8 +305,8 @@
 
     <!-- STEP 0: STANDBY -->
     <div class="step active" id="step0" onclick="triggerScan()">
-      <!-- Avviso 20 Minuti (Spostato all'inizio) -->
-      <div class="validity-note">⚠️ QR valid for 20 mins after check-out</div>
+      <!-- Avviso 30 Minuti (Spostato all'inizio e aggiornato) -->
+      <div class="validity-note">⚠️ QR valid for 30 mins after check-out</div>
       
       <div class="qr-wrapper">
         <div class="qr-image"></div>
@@ -328,7 +328,7 @@
           <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          <!-- Il nome viene pulito dai numeri (es. Mario 1 -> Mario) -->
+          <!-- Il nome viene pulito dai numeri (es. Mario 1 -> Mario) nella visualizzazione -->
           <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Mario Rossi</span>
         </button>
       </div>
@@ -407,6 +407,7 @@
       <div style="padding: 40px 0;">
         <span class="big-check">✅</span>
         <h1>Thank You!</h1>
+        <!-- Testo Modificato: Solo per l'hotel, niente riferimenti esterni -->
         <p class="subtitle">Your feedback helps us improve future stays.</p>
         <p class="final-message">Resetting in <span id="countdown">5</span> seconds...</p>
       </div>
@@ -468,14 +469,12 @@
         const inputVal = document.getElementById('simGuestName').value.trim();
         rawGuestName = inputVal || "Guest"; 
         
-        // Pulizia nome (rimuove numeri finali per la visualizzazione pubblica)
+        // PULIZIA NOME: rimuove numeri finali (es. "Mario Rossi 1" diventa "Mario Rossi")
         cleanGuestName = rawGuestName.replace(/\s\d+$/, '');
 
         document.getElementById('simModal').classList.remove('visible');
 
         // Controllo duplicati basato sul nome RAW (con numeri)
-        // Esempio: Mario 1 != Mario 2, quindi passano entrambi.
-        // Ma entrambi appariranno come "Mario" nella card.
         if (submittedGuests.has(rawGuestName.toLowerCase())) {
             document.getElementById('errorMsgName').textContent = `Feedback for ${cleanGuestName} (ID: ${rawGuestName}) has already been submitted.`;
             goToStep(6); 
@@ -504,14 +503,17 @@
       setTimeout(() => goToStep(3), 300);
     }
 
+    // LOGICA CUMULATIVA TEMPLATE
     function addTemplate(text) {
       const textarea = document.getElementById("commentInput");
       let currentText = textarea.value.trim();
+      
       if (currentText.length > 0 && !currentText.endsWith('.') && !currentText.endsWith('!')) {
           currentText += ". ";
       } else if (currentText.length > 0) {
           currentText += " ";
       }
+      
       textarea.value = currentText + text;
       event.currentTarget.style.transform = "scale(0.95)";
       setTimeout(() => event.currentTarget.style.transform = "scale(1)", 150);
@@ -525,7 +527,7 @@
           document.getElementById('cardName').textContent = "Anonymous Guest";
           document.getElementById('cardAvatarIcon').textContent = "🕶️";
       } else {
-          // Qui usiamo il nome PULITO (senza numeri)
+          // Usa il nome PULITO (senza numeri)
           document.getElementById('cardName').textContent = cleanGuestName;
           document.getElementById('cardAvatarIcon').textContent = "👤";
       }
