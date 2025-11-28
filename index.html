@@ -484,7 +484,7 @@
 
         document.getElementById('simModal').classList.remove('visible');
 
-        // Controllo duplicati sul nome raw
+        // Controllo duplicati sul nome raw (solo sul kiosk)
         if (submittedGuests.has(rawGuestName.toLowerCase())) {
             document.getElementById('errorMsgName').textContent =
               `Feedback for ${cleanGuestName} (ID: ${rawGuestName}) has already been submitted.`;
@@ -561,7 +561,7 @@
 
     /* -------------------------------------------------
        Simulated call to ALOE backend.
-       In real production, ALOE dev would:
+       In production, ALOE dev would:
        - set ALOE_API_URL to the real endpoint
        - implement the fetch(...) below
     --------------------------------------------------*/
@@ -593,8 +593,7 @@
         guest_name: feedbackData.anonymous ? null : cleanGuestName,
         rating: feedbackData.rating,             // 1, 2, 3
         comment: feedbackData.comment || null,
-        submitted_at: new Date().toISOString(),
-        kiosk_guest_token: rawGuestName          // solo per deduplica backend
+        submitted_at: new Date().toISOString()
       };
 
       // Simula invio verso ALOE (solo console.log in questa demo)
