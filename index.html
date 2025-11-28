@@ -266,7 +266,7 @@
         </div>
     </div>
 
-    <!-- MODAL SIMULAZIONE (Il "Popup" richiesto) -->
+    <!-- MODAL SIMULAZIONE (popup QR letto) -->
     <div class="modal-overlay" id="simModal">
         <div class="modal-box">
             <span class="demo-badge" style="background: var(--aloe-accent);">SYSTEM CHECK: QR Data Read</span>
@@ -428,18 +428,15 @@
 
   <script>
     /* ---------------------------------------------
-       Simulated ALOE integration constants
-       (In real life these come from the QR code
-        or from a backend session)
+       Simulated QR data:
+       in real life these come from the QR code.
     ----------------------------------------------*/
-    const HOTEL_ID = "ALO-HTL-001";               // Internal ALOE Hotel ID
-    const HOTEL_NAME = "ALOE Demo Hotel";         // Hotel name read from QR
-    const EXPERIENCE_ID = "PKG_CHIANTI_TOUR";     // ALOE experience/package ID (optional)
-    const EXPERIENCE_LABEL = "Chianti Wine Tour"; // Label shown to the user
+    const HOTEL_NAME = "ALOE Demo Hotel";
+    const EXPERIENCE_LABEL = "Chianti Wine Tour";
 
     const submittedGuests = new Set();
-    let rawGuestName = "Mario Rossi"; // Nome con eventuale numero (es. Mario 1)
-    let cleanGuestName = "Mario Rossi"; // Nome pulito (es. Mario) per la visualizzazione
+    let rawGuestName = "Mario Rossi";   // con eventuale numero (es. "Mario Rossi 1")
+    let cleanGuestName = "Mario Rossi"; // nome pulito per la card
     let feedbackData = { anonymous: true, rating: null, comment: "" };
     let currentStep = 0; 
     const totalSteps = 5; 
@@ -482,14 +479,15 @@
         const inputVal = document.getElementById('simGuestName').value.trim();
         rawGuestName = inputVal || "Guest"; 
         
-        // PULIZIA NOME: rimuove numeri finali (es. "Mario Rossi 1" diventa "Mario Rossi")
+        // Pulisce il nome rimuovendo eventuale numero finale (es. "Mario Rossi 1" -> "Mario Rossi")
         cleanGuestName = rawGuestName.replace(/\s\d+$/, '');
 
         document.getElementById('simModal').classList.remove('visible');
 
-        // Controllo duplicati basato sul nome RAW (con numeri)
+        // Controllo duplicati sul nome raw
         if (submittedGuests.has(rawGuestName.toLowerCase())) {
-            document.getElementById('errorMsgName').textContent = `Feedback for ${cleanGuestName} (ID: ${rawGuestName}) has already been submitted.`;
+            document.getElementById('errorMsgName').textContent =
+              `Feedback for ${cleanGuestName} (ID: ${rawGuestName}) has already been submitted.`;
             goToStep(6); 
             setTimeout(() => { goToStep(0); }, 4000);
             return;
@@ -545,7 +543,6 @@
 
       const date = new Date();
       const options = { month: 'short', day: 'numeric', year: 'numeric' };
-      // Usa il nome del pacchetto ALOE letto dal QR
       document.getElementById('cardDate').textContent =
         `${EXPERIENCE_LABEL} • ${date.toLocaleDateString('en-US', options)}`;
 
@@ -565,9 +562,8 @@
     /* -------------------------------------------------
        Simulated call to ALOE backend.
        In real production, ALOE dev would:
-       - set ALOE_API_URL to something like:
-         "https://api.aloesuite.com/feedback"
-       - remove console.log and uncomment fetch(...)
+       - set ALOE_API_URL to the real endpoint
+       - implement the fetch(...) below
     --------------------------------------------------*/
     function sendFeedbackToAloe(payload) {
       const ALOE_API_URL = "https://api.aloe-demo.com/feedback"; // placeholder
@@ -576,7 +572,7 @@
       
       /*
       // REAL-WORLD EXAMPLE (to be implemented by ALOE dev team)
-      return fetch(ALOe_API_URL, {
+      return fetch(ALOE_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -587,21 +583,18 @@
     }
 
     function submitFeedback() {
-      // Salva il nome RAW per bloccare futuri duplicati
+      // Salva il nome RAW per bloccare futuri duplicati sul kiosk
       submittedGuests.add(rawGuestName.toLowerCase());
 
-      // Costruisce il JSON che ALOE riceverebbe
+      // JSON che andrebbe ad ALOE
       const payload = {
-        hotel_id: HOTEL_ID,
         hotel_name: HOTEL_NAME,
-        experience_id: EXPERIENCE_ID,       // può essere null se nessun pacchetto
-        experience_label: EXPERIENCE_LABEL, // etichetta visibile
+        experience_label: EXPERIENCE_LABEL,       // es. "Chianti Wine Tour"
         guest_name: feedbackData.anonymous ? null : cleanGuestName,
-        rating: feedbackData.rating,        // 1, 2, 3
+        rating: feedbackData.rating,             // 1, 2, 3
         comment: feedbackData.comment || null,
         submitted_at: new Date().toISOString(),
-        // campo aggiuntivo per tracciare la "sessione"
-        kiosk_guest_token: rawGuestName
+        kiosk_guest_token: rawGuestName          // solo per deduplica backend
       };
 
       // Simula invio verso ALOE (solo console.log in questa demo)
