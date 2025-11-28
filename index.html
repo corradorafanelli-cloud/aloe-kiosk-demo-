@@ -228,7 +228,6 @@
     .info-label { color: #888; font-weight: 500; }
     .info-val { font-weight: 600; color: var(--aloe-text-dark); }
     
-    /* Nuovi stili per il box di accesso */
     .access-note {
         background: var(--aloe-success-light); border: 1px solid var(--aloe-success-border); color: var(--aloe-success-text);
         padding: 12px; border-radius: 12px; font-size: 13px; margin-top: 15px; font-weight: 600; line-height: 1.4;
@@ -275,15 +274,21 @@
             
             <!-- Dati simulati letti dal QR -->
             <div class="info-row">
+                <span class="info-label">Hotel name:</span>
+                <span class="info-val" id="modalHotelName">ALOE Demo Hotel</span>
+            </div>
+            <div class="info-row">
                 <span class="info-label">Included Package:</span>
-                <span class="info-val">Chianti Wine Tour <small style="font-weight:400; color:#888;">(Optional)</small></span>
+                <span class="info-val">
+                  <span id="modalPackageName">Chianti Wine Tour</span>
+                  <small style="font-weight:400; color:#888;"> (Optional)</small>
+                </span>
             </div>
             <div class="info-row">
                 <span class="info-label">Stay Duration:</span>
                 <span class="info-val">3 Nights</span>
             </div>
 
-            <!-- Nota Sicurezza aggiornata -->
             <div class="access-note">
                 ✅ Access granted. You can now leave your review.
             </div>
@@ -305,7 +310,6 @@
 
     <!-- STEP 0: STANDBY -->
     <div class="step active" id="step0" onclick="triggerScan()">
-      <!-- Avviso 30 Minuti (Spostato all'inizio e aggiornato) -->
       <div class="validity-note">⚠️ QR valid for 30 mins after check-out</div>
       
       <div class="qr-wrapper">
@@ -317,7 +321,6 @@
       <p class="tap-hint">(Tap screen to simulate scan)</p>
     </div>
 
-
     <!-- STEP 1: Privacy Choice -->
     <div class="step" id="step1">
       <h1>Share Your Feedback</h1>
@@ -328,7 +331,6 @@
           <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          <!-- Il nome viene pulito dai numeri (es. Mario 1 -> Mario) nella visualizzazione -->
           <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Mario Rossi</span>
         </button>
       </div>
@@ -378,7 +380,6 @@
 
       <span class="preview-label">Review Card</span>
       
-      <!-- CARD STYLE -->
       <div class="review-card">
           <div class="review-header">
               <div class="review-avatar">
@@ -386,7 +387,6 @@
               </div>
               <div class="review-info">
                   <h3 id="cardName">Mario Rossi</h3>
-                  <!-- Specificato il pacchetto ALOE -->
                   <span id="cardDate">Chianti Wine Tour • Verified Guest</span>
               </div>
           </div>
@@ -407,7 +407,6 @@
       <div style="padding: 40px 0;">
         <span class="big-check">✅</span>
         <h1>Thank You!</h1>
-        <!-- Testo Modificato: Solo per l'hotel, niente riferimenti esterni -->
         <p class="subtitle">Your feedback helps us improve future stays.</p>
         <p class="final-message">Resetting in <span id="countdown">5</span> seconds...</p>
       </div>
@@ -428,6 +427,16 @@
   </div>
 
   <script>
+    /* ---------------------------------------------
+       Simulated ALOE integration constants
+       (In real life these come from the QR code
+        or from a backend session)
+    ----------------------------------------------*/
+    const HOTEL_ID = "ALO-HTL-001";               // Internal ALOE Hotel ID
+    const HOTEL_NAME = "ALOE Demo Hotel";         // Hotel name read from QR
+    const EXPERIENCE_ID = "PKG_CHIANTI_TOUR";     // ALOE experience/package ID (optional)
+    const EXPERIENCE_LABEL = "Chianti Wine Tour"; // Label shown to the user
+
     const submittedGuests = new Set();
     let rawGuestName = "Mario Rossi"; // Nome con eventuale numero (es. Mario 1)
     let cleanGuestName = "Mario Rossi"; // Nome pulito (es. Mario) per la visualizzazione
@@ -461,6 +470,10 @@
     }
 
     function triggerScan() {
+        // Simula lettura dati dal QR: hotel + pacchetto
+        document.getElementById('modalHotelName').textContent = HOTEL_NAME;
+        document.getElementById('modalPackageName').textContent = EXPERIENCE_LABEL;
+
         document.getElementById('simModal').classList.add('visible');
         setTimeout(() => document.getElementById('simGuestName').focus(), 100);
     }
@@ -503,7 +516,6 @@
       setTimeout(() => goToStep(3), 300);
     }
 
-    // LOGICA CUMULATIVA TEMPLATE
     function addTemplate(text) {
       const textarea = document.getElementById("commentInput");
       let currentText = textarea.value.trim();
@@ -527,15 +539,15 @@
           document.getElementById('cardName').textContent = "Anonymous Guest";
           document.getElementById('cardAvatarIcon').textContent = "🕶️";
       } else {
-          // Usa il nome PULITO (senza numeri)
           document.getElementById('cardName').textContent = cleanGuestName;
           document.getElementById('cardAvatarIcon').textContent = "👤";
       }
 
       const date = new Date();
       const options = { month: 'short', day: 'numeric', year: 'numeric' };
-      // AGGIORNATO: Mostra il pacchetto specifico
-      document.getElementById('cardDate').textContent = `Chianti Wine Tour • ${date.toLocaleDateString('en-US', options)}`;
+      // Usa il nome del pacchetto ALOE letto dal QR
+      document.getElementById('cardDate').textContent =
+        `${EXPERIENCE_LABEL} • ${date.toLocaleDateString('en-US', options)}`;
 
       const starsMap = { 1: '★★☆☆☆', 2: '★★★☆☆', 3: '★★★★★' };
       const starsColor = { 1: '#D9534F', 2: '#F0AD4E', 3: '#6B8E23' }; 
@@ -550,11 +562,56 @@
       goToStep(4);
     }
 
+    /* -------------------------------------------------
+       Simulated call to ALOE backend.
+       In real production, ALOE dev would:
+       - set ALOE_API_URL to something like:
+         "https://api.aloesuite.com/feedback"
+       - remove console.log and uncomment fetch(...)
+    --------------------------------------------------*/
+    function sendFeedbackToAloe(payload) {
+      const ALOE_API_URL = "https://api.aloe-demo.com/feedback"; // placeholder
+
+      console.log("Simulated payload to ALOE API:", payload);
+      
+      /*
+      // REAL-WORLD EXAMPLE (to be implemented by ALOE dev team)
+      return fetch(ALOe_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      */
+    }
+
     function submitFeedback() {
       // Salva il nome RAW per bloccare futuri duplicati
       submittedGuests.add(rawGuestName.toLowerCase());
+
+      // Costruisce il JSON che ALOE riceverebbe
+      const payload = {
+        hotel_id: HOTEL_ID,
+        hotel_name: HOTEL_NAME,
+        experience_id: EXPERIENCE_ID,       // può essere null se nessun pacchetto
+        experience_label: EXPERIENCE_LABEL, // etichetta visibile
+        guest_name: feedbackData.anonymous ? null : cleanGuestName,
+        rating: feedbackData.rating,        // 1, 2, 3
+        comment: feedbackData.comment || null,
+        submitted_at: new Date().toISOString(),
+        // campo aggiuntivo per tracciare la "sessione"
+        kiosk_guest_token: rawGuestName
+      };
+
+      // Simula invio verso ALOE (solo console.log in questa demo)
+      sendFeedbackToAloe(payload);
+
       goToStep(5);
-      
+      startResetCountdown();
+    }
+
+    function startResetCountdown() {
       let seconds = 5;
       const counterEl = document.getElementById('countdown');
       const interval = setInterval(() => {
