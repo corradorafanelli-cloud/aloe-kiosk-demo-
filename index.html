@@ -534,6 +534,7 @@
 
       const date = new Date();
       const options = { month: 'short', day: 'numeric', year: 'numeric' };
+      // AGGIORNATO: Mostra il pacchetto specifico
       document.getElementById('cardDate').textContent = `Chianti Wine Tour • ${date.toLocaleDateString('en-US', options)}`;
 
       const starsMap = { 1: '★★☆☆☆', 2: '★★★☆☆', 3: '★★★★★' };
