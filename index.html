@@ -216,6 +216,7 @@
         background: white; border: 2px solid var(--aloe-border);
         padding: 28px; border-radius: 24px;
         box-shadow: 0 20px 50px rgba(0,0,0,0.1); width: 90%; text-align: center;
+        max-width: 400px;
     }
     .demo-badge {
         background: #333; color: white; padding: 4px 10px; border-radius: 12px;
@@ -266,7 +267,7 @@
         </div>
     </div>
 
-    <!-- MODAL SIMULAZIONE (popup QR letto) -->
+    <!-- MODAL SIMULAZIONE (Il "Popup" richiesto) -->
     <div class="modal-overlay" id="simModal">
         <div class="modal-box">
             <span class="demo-badge" style="background: var(--aloe-accent);">SYSTEM CHECK: QR Data Read</span>
@@ -275,7 +276,7 @@
             <!-- Dati simulati letti dal QR -->
             <div class="info-row">
                 <span class="info-label">Hotel name:</span>
-                <span class="info-val" id="modalHotelName"> Demo Hotel</span>
+                <span class="info-val" id="modalHotelName">ALOE Demo Hotel</span>
             </div>
             <div class="info-row">
                 <span class="info-label">Included Package:</span>
@@ -306,8 +307,8 @@
             >
             <div class="modal-hint">
               Demo Note: typing the guest name here is only for simulation purposes.<br>
-              In a real case the guest name would already be encoded inside the QR code.<br>
-              Re-using the exact same name triggers the "Already Received" block. 
+              In a real ALOE integration the guest name would already be encoded inside the QR code.<br>
+              Re-using the exact same name triggers the "Already Received" block.
             </div>
             
             <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">
@@ -318,6 +319,7 @@
 
     <!-- STEP 0: STANDBY -->
     <div class="step active" id="step0" onclick="triggerScan()">
+      <!-- Avviso 30 Minuti -->
       <div class="validity-note">⚠️ QR valid for 30 mins after check-out</div>
       
       <div class="qr-wrapper">
@@ -329,6 +331,7 @@
       <p class="tap-hint">(Tap screen to simulate scan)</p>
     </div>
 
+
     <!-- STEP 1: Privacy Choice -->
     <div class="step" id="step1">
       <h1>Share Your Feedback</h1>
@@ -339,6 +342,7 @@
           <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
+          <!-- Il nome viene pulito dai numeri (es. Mario Rossi 1 -> Mario Rossi) nella visualizzazione -->
           <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Mario Rossi</span>
         </button>
       </div>
@@ -388,6 +392,7 @@
 
       <span class="preview-label">Review Card</span>
       
+      <!-- CARD STYLE -->
       <div class="review-card">
           <div class="review-header">
               <div class="review-avatar">
@@ -395,6 +400,7 @@
               </div>
               <div class="review-info">
                   <h3 id="cardName">Mario Rossi</h3>
+                  <!-- Specificato il pacchetto ALOE -->
                   <span id="cardDate">Chianti Wine Tour • Verified Guest</span>
               </div>
           </div>
@@ -415,6 +421,7 @@
       <div style="padding: 40px 0;">
         <span class="big-check">✅</span>
         <h1>Thank You!</h1>
+        <!-- Testo: Solo per l'hotel, niente riferimenti esterni -->
         <p class="subtitle">Your feedback helps us improve future stays.</p>
         <p class="final-message">Resetting in <span id="countdown">5</span> seconds...</p>
       </div>
@@ -437,14 +444,25 @@
   <script>
     /* ---------------------------------------------
        Simulated QR data:
-       in real Case these come from the QR code.
+       in real life these come from the QR code
+       generated from a JSON template filled by
+       the Hotel Operator.
+
+       Real QR JSON fields:
+       {
+         "hotel_name": "...",
+         "guest_name": "...",        // group leader (e.g. "Mario Rossi 1")
+         "group_members": [...],
+         "experience_label": "...",
+         "stay_nights": 3
+       }
     ----------------------------------------------*/
     const HOTEL_NAME = "ALOE Demo Hotel";
     const EXPERIENCE_LABEL = "Chianti Wine Tour";
 
     const submittedGuests = new Set();
-    let rawGuestName = "Mario Rossi";   // con eventuale numero (es. "Mario Rossi 1")
-    let cleanGuestName = "Mario Rossi"; // nome pulito per la card
+    let rawGuestName = "Mario Rossi"; // Nome con eventuale numero (es. "Mario Rossi 1")
+    let cleanGuestName = "Mario Rossi"; // Nome pulito per la card (es. "Mario Rossi")
     let feedbackData = { anonymous: true, rating: null, comment: "" };
     let currentStep = 0; 
     const totalSteps = 5; 
@@ -475,7 +493,9 @@
     }
 
     function triggerScan() {
-        // Simula lettura dati dal QR: hotel + pacchetto
+        // Nella demo: simuliamo la lettura dal QR usando le costanti sopra.
+        // In un kiosk reale, qui verrebbe chiamata una funzione che riceve
+        // la stringa JSON decodificata dal QR scanner (vedi blocco commentato a fine file).
         document.getElementById('modalHotelName').textContent = HOTEL_NAME;
         document.getElementById('modalPackageName').textContent = EXPERIENCE_LABEL;
 
@@ -487,15 +507,14 @@
         const inputVal = document.getElementById('simGuestName').value.trim();
         rawGuestName = inputVal || "Guest"; 
         
-        // Pulisce il nome rimuovendo eventuale numero finale (es. "Mario Rossi 1" -> "Mario Rossi")
+        // PULIZIA NOME: rimuove numeri finali (es. "Mario Rossi 1" diventa "Mario Rossi")
         cleanGuestName = rawGuestName.replace(/\s\d+$/, '');
 
         document.getElementById('simModal').classList.remove('visible');
 
-        // Controllo duplicati sul nome raw (solo sul kiosk)
+        // Controllo duplicati basato sul nome RAW (con numeri)
         if (submittedGuests.has(rawGuestName.toLowerCase())) {
-            document.getElementById('errorMsgName').textContent =
-              `Feedback for ${cleanGuestName} (ID: ${rawGuestName}) has already been submitted.`;
+            document.getElementById('errorMsgName').textContent = `Feedback for ${cleanGuestName} (ID: ${rawGuestName}) has already been submitted.`;
             goToStep(6); 
             setTimeout(() => { goToStep(0); }, 4000);
             return;
@@ -522,6 +541,7 @@
       setTimeout(() => goToStep(3), 300);
     }
 
+    // LOGICA CUMULATIVA TEMPLATE
     function addTemplate(text) {
       const textarea = document.getElementById("commentInput");
       let currentText = textarea.value.trim();
@@ -545,14 +565,15 @@
           document.getElementById('cardName').textContent = "Anonymous Guest";
           document.getElementById('cardAvatarIcon').textContent = "🕶️";
       } else {
+          // Usa il nome PULITO (senza numeri)
           document.getElementById('cardName').textContent = cleanGuestName;
           document.getElementById('cardAvatarIcon').textContent = "👤";
       }
 
       const date = new Date();
       const options = { month: 'short', day: 'numeric', year: 'numeric' };
-      document.getElementById('cardDate').textContent =
-        `${EXPERIENCE_LABEL} • ${date.toLocaleDateString('en-US', options)}`;
+      // AGGIORNATO: Mostra il pacchetto specifico
+      document.getElementById('cardDate').textContent = `${EXPERIENCE_LABEL} • ${date.toLocaleDateString('en-US', options)}`;
 
       const starsMap = { 1: '★★☆☆☆', 2: '★★★☆☆', 3: '★★★★★' };
       const starsColor = { 1: '#D9534F', 2: '#F0AD4E', 3: '#6B8E23' }; 
@@ -591,10 +612,10 @@
     }
 
     function submitFeedback() {
-      // Salva il nome RAW per bloccare futuri duplicati sul kiosk
+      // Salva il nome RAW per bloccare futuri duplicati
       submittedGuests.add(rawGuestName.toLowerCase());
-
-      // JSON che andrebbe ad ALOE
+      
+      // Costruisce il payload JSON che verrebbe inviato ad ALOE
       const payload = {
         hotel_name: HOTEL_NAME,
         experience_label: EXPERIENCE_LABEL,
@@ -608,10 +629,7 @@
       sendFeedbackToAloe(payload);
 
       goToStep(5);
-      startResetCountdown();
-    }
-
-    function startResetCountdown() {
+      
       let seconds = 5;
       const counterEl = document.getElementById('countdown');
       const interval = setInterval(() => {
@@ -630,6 +648,89 @@
         document.querySelectorAll('.btn-emoji').forEach(b => b.classList.remove('selected'));
         document.getElementById('btnNextStep2').disabled = true;
     }
+
+    /* ------------------------------------------------------------------
+       REAL-WORLD QR INTEGRATION (COMMENTED OUT FOR THE DEMO)
+
+       This is how the kiosk web app would handle the JSON content
+       coming from the QR code generated by the Hotel Operator.
+
+       Hotel Operator fills a JSON template like:
+
+       {
+         "hotel_name": "ALOE Demo Hotel",
+         "guest_name": "Mario Rossi 1",      // group leader, with index for homonyms
+         "group_members": ["Anna Bianchi", "Luca Verdi"],
+         "experience_label": "Chianti Wine Tour",
+         "stay_nights": 3
+       }
+
+       That JSON is pasted into an online QR generator and printed.
+       At check-out, the QR scanner decodes the QR and provides
+       the original JSON string to the kiosk app.
+       The scanner integration would call the function below,
+       passing the decoded JSON string as "decodedStringFromScanner".
+    ------------------------------------------------------------------*/
+
+    /*
+    function handleRealQrScan(decodedStringFromScanner) {
+      try {
+        // Parse JSON encoded inside the printed QR
+        const qrPayload = JSON.parse(decodedStringFromScanner);
+
+        // In a real implementation, HOTEL_NAME and EXPERIENCE_LABEL
+        // would be declared as "let" instead of "const" at the top:
+        //
+        //   let HOTEL_NAME = "ALOE Demo Hotel";
+        //   let EXPERIENCE_LABEL = "Chianti Wine Tour";
+        //
+        // and then updated here:
+        //
+        // HOTEL_NAME = qrPayload.hotel_name || HOTEL_NAME;
+        // EXPERIENCE_LABEL = qrPayload.experience_label || EXPERIENCE_LABEL;
+
+        // Guest name from QR (e.g. "Mario Rossi 1")
+        rawGuestName = qrPayload.guest_name || "Guest";
+        cleanGuestName = rawGuestName.replace(/\s\d+$/, '');
+
+        // Update UI fields in the verification modal
+        document.getElementById('modalHotelName').textContent =
+          qrPayload.hotel_name || 'Unknown hotel';
+
+        if (qrPayload.experience_label) {
+          document.getElementById('modalPackageName').textContent =
+            qrPayload.experience_label;
+        }
+
+        // If you also want to show stay nights from the QR,
+        // you could add an element in the DOM and update it here:
+        //
+        // document.getElementById('stayNightsSpan').textContent =
+        //   qrPayload.stay_nights ? qrPayload.stay_nights + " Nights" : "Stay";
+
+        // Also update the display name in step 1
+        document.getElementById('userNameDisplay').textContent = cleanGuestName;
+
+        // Open the same modal used in the demo
+        document.getElementById('simModal').classList.add('visible');
+        setTimeout(() => document.getElementById('simGuestName').focus(), 100);
+
+      } catch (e) {
+        console.error('Invalid QR JSON payload', e);
+        // Here you could show an "Invalid QR" message on the kiosk
+      }
+    }
+
+    // In production, instead of calling "triggerScan()" on tap,
+    // the QR scanner hardware/driver would decode the QR and call:
+    //
+    //     handleRealQrScan(decodedStringFromScanner);
+    //
+    // where "decodedStringFromScanner" is the exact JSON text that
+    // the Hotel Operator wrote by hand in the JSON template and
+    // then encoded into the QR code.
+    */
+
   </script>
 </body>
 </html>
