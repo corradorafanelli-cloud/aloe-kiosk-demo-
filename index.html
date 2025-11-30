@@ -454,7 +454,8 @@
          "guest_name": "...",        // group leader (e.g. "Mario Rossi 1")
          "group_members": [...],
          "experience_label": "...",
-         "stay_nights": 3
+         "stay_nights": 3,
+         "valid_until": "2025-11-28T10:30:00Z" // last moment to leave a review
        }
     ----------------------------------------------*/
     const HOTEL_NAME = "ALOE Demo Hotel";
@@ -493,9 +494,9 @@
     }
 
     function triggerScan() {
-        // Nella demo: simuliamo la lettura dal QR usando le costanti sopra.
-        // In un kiosk reale, qui verrebbe chiamata una funzione che riceve
-        // la stringa JSON decodificata dal QR scanner (vedi blocco commentato a fine file).
+        // Demo: simulate QR scan using constants above.
+        // In a real kiosk, this would be called by scanner code
+        // after decoding the QR (see handleRealQrScan in comments).
         document.getElementById('modalHotelName').textContent = HOTEL_NAME;
         document.getElementById('modalPackageName').textContent = EXPERIENCE_LABEL;
 
@@ -662,7 +663,8 @@
          "guest_name": "Mario Rossi 1",      // group leader, with index for homonyms
          "group_members": ["Anna Bianchi", "Luca Verdi"],
          "experience_label": "Chianti Wine Tour",
-         "stay_nights": 3
+         "stay_nights": 3,
+         "valid_until": "2025-11-28T10:30:00Z"
        }
 
        That JSON is pasted into an online QR generator and printed.
@@ -677,6 +679,18 @@
       try {
         // Parse JSON encoded inside the printed QR
         const qrPayload = JSON.parse(decodedStringFromScanner);
+
+        // 0) Optional: QR expiry check (max time window after check-out)
+        if (qrPayload.valid_until) {
+          const now = new Date();
+          const expiresAt = new Date(qrPayload.valid_until);
+
+          if (now > expiresAt) {
+            // In a real kiosk you'd show a proper UI screen instead of alert()
+            alert("This QR code has expired. Reviews are only allowed within the allowed time window after check-out.");
+            return; // Stop here - no review allowed
+          }
+        }
 
         // In a real implementation, HOTEL_NAME and EXPERIENCE_LABEL
         // would be declared as "let" instead of "const" at the top:
@@ -701,12 +715,6 @@
           document.getElementById('modalPackageName').textContent =
             qrPayload.experience_label;
         }
-
-        // If you also want to show stay nights from the QR,
-        // you could add an element in the DOM and update it here:
-        //
-        // document.getElementById('stayNightsSpan').textContent =
-        //   qrPayload.stay_nights ? qrPayload.stay_nights + " Nights" : "Stay";
 
         // Also update the display name in step 1
         document.getElementById('userNameDisplay').textContent = cleanGuestName;
