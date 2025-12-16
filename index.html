@@ -256,7 +256,6 @@
 <body>
 
   <div class="app">
-    <!-- HEADER -->
     <div class="header-container hidden" id="mainHeader">
         <div class="progress-bar">
             <div class="progress-dot" id="dot1"></div>
@@ -267,13 +266,11 @@
         </div>
     </div>
 
-    <!-- MODAL SIMULAZIONE (Il "Popup" richiesto) -->
     <div class="modal-overlay" id="simModal">
         <div class="modal-box">
             <span class="demo-badge" style="background: var(--aloe-accent);">SYSTEM CHECK: QR Data Read</span>
             <h2 style="font-size: 18px; color: var(--aloe-primary); margin-bottom: 20px;">Verification Successful</h2>
             
-            <!-- Dati simulati letti dal QR -->
             <div class="info-row">
                 <span class="info-label">Hotel name:</span>
                 <span class="info-val" id="modalHotelName">ALOE Demo Hotel</span>
@@ -295,27 +292,23 @@
             </div>
             <div class="access-subnote">
             
-            <!-- Input per la Demo -->
             <label class="sim-label" for="simGuestName">Simulate Guest Name:</label>
-            <input
-              type="text"
-              class="modal-input"
-              id="simGuestName"
+            <input 
+              type="text" 
+              class="modal-input" 
+              id="simGuestName" 
               placeholder="Type guest name here..."
             >
             <div class="modal-hint">
               Demo Note: typing the guest name here is only for simulation purposes.<br>
               In a real  integration the guest name would already be encoded inside the QR code.<br>
+            </div>
             
             <button class="btn-primary btn" style="width:100%; padding:14px;" onclick="confirmSimulation()">
               Confirm & Continue
             </button>
-        </div>
-    </div>
-
-    <!-- STEP 0: STANDBY -->
-    <div class="step active" id="step0" onclick="triggerScan()">
-      <!-- Avviso 30 Minuti -->
+            
+            </div> </div> </div> <div class="step active" id="step0" onclick="triggerScan()">
       <div class="validity-note">⚠️ QR valid for 30 mins after check-out</div>
       
       <div class="qr-wrapper">
@@ -328,7 +321,6 @@
     </div>
 
 
-    <!-- STEP 1: Privacy Choice -->
     <div class="step" id="step1">
       <h1>Share Your Feedback</h1>
       <p class="subtitle">How would you like to submit your review?</p>
@@ -338,13 +330,11 @@
           <span class="btn-icon">🕶️</span> Submit Anonymously
         </button>
         <button class="btn" onclick="selectMode('named')">
-          <!-- Il nome viene pulito dai numeri (es. Mario Rossi 1 -> Mario Rossi) nella visualizzazione -->
           <span class="btn-icon">👤</span> Submit as <span id="userNameDisplay" style="margin-left:5px; font-weight:700;">Mario Rossi</span>
         </button>
       </div>
     </div>
 
-    <!-- STEP 2: Rating -->
     <div class="step" id="step2">
       <h1>How was your stay?</h1>
       <p class="subtitle">Tap an emoji to rate your experience.</p>
@@ -361,7 +351,6 @@
       </div>
     </div>
 
-    <!-- STEP 3: Details -->
     <div class="step" id="step3">
       <h1>Add a quick comment?</h1>
       <p class="subtitle">Tap phrases to build your review.</p>
@@ -381,14 +370,12 @@
       </div>
     </div>
 
-    <!-- STEP 4: Review Card Preview -->
     <div class="step" id="step4">
       <h1>Review Preview</h1>
       <p class="subtitle">Confirm your submission details.</p>
 
       <span class="preview-label">Review Card</span>
       
-      <!-- CARD STYLE -->
       <div class="review-card">
           <div class="review-header">
               <div class="review-avatar">
@@ -396,7 +383,6 @@
               </div>
               <div class="review-info">
                   <h3 id="cardName">Mario Rossi</h3>
-                  <!-- Specificato il pacchetto ALOE -->
                   <span id="cardDate">Chianti Wine Tour • Verified Guest</span>
               </div>
           </div>
@@ -412,18 +398,15 @@
       </div>
     </div>
 
-    <!-- STEP 5: Thanks -->
     <div class="step" id="step5">
       <div style="padding: 40px 0;">
         <span class="big-check">✅</span>
         <h1>Thank You!</h1>
-        <!-- Testo: Solo per l'hotel, niente riferimenti esterni -->
         <p class="subtitle">Your feedback helps us improve future stays.</p>
         <p class="final-message">Resetting in <span id="countdown">5</span> seconds...</p>
       </div>
     </div>
 
-    <!-- STEP 6: ERROR -->
     <div class="step" id="step6">
       <div style="padding: 40px 0;">
         <span class="big-error">⛔</span>
@@ -645,7 +628,6 @@
         document.querySelectorAll('.btn-emoji').forEach(b => b.classList.remove('selected'));
         document.getElementById('btnNextStep2').disabled = true;
     }
-
     /* ------------------------------------------------------------------
        REAL-WORLD QR INTEGRATION (COMMENTED OUT FOR THE DEMO)
 
@@ -734,6 +716,8 @@
     // the Hotel Operator wrote by hand in the JSON template and
     // then encoded into the QR code.
     */
+
+    
 
   </script>
 </body>
